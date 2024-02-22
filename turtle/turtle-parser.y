@@ -25,6 +25,7 @@ void yyerror(struct ast *ret, const char *);
 %token <name>     NAME        "name"
 
 %token            KW_FORWARD  "forward"
+%token            KW_COLOR    "color"
 /* TODO: add other tokens */
 
 %type <node> unit cmds cmd expr
@@ -42,6 +43,8 @@ cmds:
 
 cmd:
     KW_FORWARD expr   { /* TODO */ }
+    KW_COLOR expr expr expr    { /* TODO */ }
+    KW_COLOR 
 ;
 
 expr:

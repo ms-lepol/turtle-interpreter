@@ -78,6 +78,9 @@ struct ast {
 // do not forget to destroy properly! no leaks allowed!
 void ast_destroy(struct ast *self);
 
+// destroy a node and all its children
+void ast_node_destroy(struct ast_node *self);
+
 // the execution context
 struct context {
   double x;
