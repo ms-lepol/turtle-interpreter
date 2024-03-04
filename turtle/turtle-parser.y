@@ -57,7 +57,7 @@ cmd:
   |  KW_BACKWARD expr  { $$ = make_cmd_backward($2); }
   |  KW_LEFT expr      { $$ = make_cmd_left($2); }
   |  KW_RIGHT expr     { $$ = make_cmd_right($2); }
-  |  KW_COLOR expr     { /* TODO */ }
+  |  KW_COLOR expr     { $$ = make_cmd_color($2); }
 
 ;
 
@@ -67,8 +67,11 @@ expr:
   |  expr '-' expr     { $$ = make_expr_sub($1, $3); }
   |  expr '*' expr     { $$ = make_expr_mul($1, $3); }
   |  expr '/' expr     { $$ = make_expr_div($1, $3); }
+  |  expr '^' expr     { $$ = make_expr_pow($1, $3); }
+  |  expr ',' expr     { $$ = make_expr_comma($1, $3); }
   |  '(' expr ')'      { $$ = $2; }
   |  '-' expr          { $$ = make_expr_neg($2); }
+  
 
 ;
 

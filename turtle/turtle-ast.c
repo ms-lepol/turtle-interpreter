@@ -87,7 +87,15 @@ struct ast_node *make_expr_neg(struct ast_node* expr) {
   return node;
 }
 
-
+struct ast_node *make_expr_comma(struct ast_node* left, struct ast_node* right) {
+  struct ast_node *node = calloc(1, sizeof(struct ast_node));
+  node->kind = KIND_EXPR_BINOP;
+  node->u.op = ',';
+  node->children_count = 2;
+  node->children[0] = left;
+  node->children[1] = right;
+  return node;
+}
 
 
 /*
@@ -133,6 +141,23 @@ struct ast_node *make_cmd_right(struct ast_node* expr) {
   node->children[0] = expr;
   return node;
 }
+
+
+
+/*
+ * Various cmd constructors
+ */
+
+// This is a constructor a color command node with an expression as a child
+struct ast_node *make_cmd_color(struct ast_node* expr) {
+  struct ast_node *node = calloc(1, sizeof(struct ast_node));
+  node->kind = CMD_COLOR;
+  node->u.cmd = CMD_COLOR;
+  node->children_count = 1;
+  node->children[0] = expr;
+  return node;
+}
+
 
 /*
  * ast destructor
