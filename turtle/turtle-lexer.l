@@ -34,14 +34,13 @@ FUNC_RANDOM random
 COLORS red|green|blue|cyan|magenta|yellow|black|grey|white
 PARENTHESIS_OPEN \(
 PARENTHESIS_CLOSE \)
-COMMENT_START #
-COMMENT_END \n
+COMMENT \#.*$
 
 %%
 
-{NUMBER}              { yylval.value = strtod(yytext, NULL); printf("FLOAT %i\n", VALUE); return VALUE; }
-{KW_COLOR}            { printf("KW_COLOR\n"); return KW_COLOR;}
-{COLORS}              { printf("COLOR %c\n", yytext); return COLORS; }
+{NUMBER}                 { yylval.value = strtod(yytext, NULL); printf("FLOAT %s\n", yytext); return VALUE; }
+{KW_COLOR}               { printf("KW_COLOR\n"); return KW_COLOR;}
+{COLORS}                 { yylval.name = strdup(yytext) ; printf("COLOR %s\n", yytext); return COLORS; }
 {KW_FORWARD}             { printf("FORWARD\n"); return KW_FORWARD;}
 {KW_BACKWARD}            { printf("BACKWARD\n"); return KW_BACKWARD;}
 {KW_LEFT}                { printf("LEFT\n"); return KW_LEFT;}
@@ -53,6 +52,8 @@ COMMENT_END \n
 {OP_DIV}                { printf("DIV\n"); return '/'; }
 {OP_POW}                { printf("POW\n"); return '^'; }
 {OP_MIN_UNI}            { printf("MIN_UNI\n"); return '-'; }
+
+{COMMENT}               /* ignore comments */
 
 
 [\n\t ]*              /* whitespace */

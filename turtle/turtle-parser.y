@@ -27,16 +27,17 @@ void yyerror(struct ast *ret, const char *);
 
 %token <value>    VALUE       "value"
 %token <name>     NAME        "name"
+%token <name>     COLORS      "color"
 
 /*Movement Tokens*/
-%token            KW_FORWARD  "forward"
-%token            KW_BACKWARD "backward"
-%token            KW_LEFT     "left"
-%token            KW_RIGHT    "right"
+%token            KW_FORWARD  
+%token            KW_BACKWARD 
+%token            KW_LEFT     
+%token            KW_RIGHT    
 
 /*Color Tokens*/
-%token            KW_COLOR    "color"
-%token            COLORS      "red"
+%token            KW_COLOR    
+
 /* TODO: add other tokens */
 
 %type <node> unit cmds cmd expr
@@ -54,26 +55,25 @@ cmds:
 ;
 
 cmd:
-    KW_FORWARD expr    { $$ = make_cmd_forward($2); }
+     KW_FORWARD expr   { $$ = make_cmd_forward($2); }
   |  KW_BACKWARD expr  { $$ = make_cmd_backward($2); }
   |  KW_LEFT expr      { $$ = make_cmd_left($2); }
   |  KW_RIGHT expr     { $$ = make_cmd_right($2); }
   |  KW_COLOR expr     { $$ = make_cmd_color($2); }
-
 ;
 
 expr:
-    VALUE              { $$ = make_expr_value($1); }
-  |  expr '+' expr     { $$ = make_expr_mul($1, $3); }
-  |  expr '-' expr     { $$ = make_expr_sub($1, $3); }
-  |  expr '*' expr     { $$ = make_expr_mul($1, $3); }
-  |  expr '/' expr     { $$ = make_expr_div($1, $3); }
-  |  expr '^' expr     { $$ = make_expr_pow($1, $3); }
+  VALUE                { $$ = make_expr_value($1); }
+  | COLORS             { $$ = make_expr_color($1); }
+  | NAME               { $$ = make_expr_name($1); }
+  |  expr '+' expr     { $$ = make_expr_binop('+',$1, $3); }
+  |  expr '-' expr     { $$ = make_expr_binop('-',$1, $3); }
+  |  expr '*' expr     { $$ = make_expr_binop('*',$1, $3); }
+  |  expr '/' expr     { $$ = make_expr_binop('/',$1, $3); }
+  |  expr '^' expr     { $$ = make_expr_binop('^',$1, $3); }
   |  expr ',' expr     { $$ = make_expr_comma($1, $3); }
   |  '(' expr ')'      { $$ = $2; }
   |  '-' expr          { $$ = make_expr_neg($2); }
-  
-
 ;
 
 %%

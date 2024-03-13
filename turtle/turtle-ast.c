@@ -8,6 +8,7 @@
 #include <math.h>
 
 #define PI 3.141592653589793
+#define DEV 1 // 1 for dev mode, 0 for prod mode
 
 
 /*
@@ -22,59 +23,41 @@
 // An expression can be a value in our grammar so we need to create a node for it
 // This is a constructor for a value expression
 struct ast_node *make_expr_value(double value) {
+  if (DEV) printf("make_expr_value : %f\n", value);
   struct ast_node *node = calloc(1, sizeof(struct ast_node));
   node->kind = KIND_EXPR_VALUE;
   node->u.value = value;
+  node->children_count = 0;
+  return node;  
+}
+
+// This is a constructor for a variable expression
+struct ast_node *make_expr_name(char* name) {
+  if (DEV) printf("make_expr_variable : %s\n", name);
+  struct ast_node *node = calloc(1, sizeof(struct ast_node));
+  node->kind = KIND_EXPR_NAME;
+  node->u.name = name;
+  node->children_count = 0;
   return node;
 }
 
-struct ast_node *make_expr_sum(struct ast_node* left, struct ast_node* right) {
+struct ast_node *make_expr_binop( char op,struct ast_node* left, struct ast_node* right) {
+  if (DEV) printf("make_expr_binop : %c\n", op);
   struct ast_node *node = calloc(1, sizeof(struct ast_node));
   node->kind = KIND_EXPR_BINOP;
-  node->u.op = '+';
+  node->u.op = op;
   node->children_count = 2;
   node->children[0] = left;
   node->children[1] = right;
   return node;
 }
 
-struct ast_node *make_expr_sub(struct ast_node* left, struct ast_node* right) {
+struct ast_node *make_expr_color(char* color) {
+  if (DEV) printf("make_expr_color : %s\n", color);
   struct ast_node *node = calloc(1, sizeof(struct ast_node));
-  node->kind = KIND_EXPR_BINOP;
-  node->u.op = '-';
-  node->children_count = 2;
-  node->children[0] = left;
-  node->children[1] = right;
-  return node;
-}
-
-struct ast_node *make_expr_mul(struct ast_node* left, struct ast_node* right) {
-  struct ast_node *node = calloc(1, sizeof(struct ast_node));
-  node->kind = KIND_EXPR_BINOP;
-  node->u.op = '*';
-  node->children_count = 2;
-  node->children[0] = left;
-  node->children[1] = right;
-  return node;
-}
-
-struct ast_node *make_expr_div(struct ast_node* left, struct ast_node* right) {
-  struct ast_node *node = calloc(1, sizeof(struct ast_node));
-  node->kind = KIND_EXPR_BINOP;
-  node->u.op = '/';
-  node->children_count = 2;
-  node->children[0] = left;
-  node->children[1] = right;
-  return node;
-}
-
-struct ast_node *make_expr_pow(struct ast_node* left, struct ast_node* right) {
-  struct ast_node *node = calloc(1, sizeof(struct ast_node));
-  node->kind = KIND_EXPR_BINOP;
-  node->u.op = '^';
-  node->children_count = 2;
-  node->children[0] = left;
-  node->children[1] = right;
+  node->kind = KIND_EXPR_NAME;
+  node->u.name = color; // we use the name field to store the color
+  node->children_count = 0;
   return node;
 }
 
@@ -88,6 +71,7 @@ struct ast_node *make_expr_neg(struct ast_node* expr) {
 }
 
 struct ast_node *make_expr_comma(struct ast_node* left, struct ast_node* right) {
+  if (DEV) printf("make_expr_comma\n");
   struct ast_node *node = calloc(1, sizeof(struct ast_node));
   node->kind = KIND_EXPR_BINOP;
   node->u.op = ',';
@@ -165,17 +149,25 @@ struct ast_node *make_cmd_color(struct ast_node* expr) {
 
 void ast_destroy(struct ast *self) {
   if (self->unit) {
+    printf("destroying ast\n");
     ast_node_destroy(self->unit);
+    free(self->unit);
   }
 }
 
 void ast_node_destroy(struct ast_node *self) {
-  int i = 0;
-  while(self->children[i]) {
+  
+  for (int i = 0; i < self->children_count; i++) {
     ast_node_destroy(self->children[i]);
-    ++i;
+    free(self->children[i]);
   }
-  free(self);
+  if (DEV) printf("destroying ast_node\n");
+  if (self->kind == KIND_EXPR_NAME) free(self->u.name);
+  if (self->next) {
+    ast_node_destroy(self->next);
+    free(self->next);
+  }
+ 
 }
 
 /*
