@@ -12,7 +12,6 @@ int main() {
 
   struct ast root;
   int ret = yyparse(&root);
-  printf("je pète ici\n");
   if (ret != 0) {
     return ret;
   }
@@ -25,7 +24,7 @@ int main() {
   context_create(&ctx);
   
   printf("----------------\n"); 
-  // ast_eval(&root, &ctx);
+  ast_eval(&root, &ctx);
   printf("----------------\n"); 
   ast_print(&root);
 

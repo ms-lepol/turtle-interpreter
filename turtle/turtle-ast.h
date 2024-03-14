@@ -71,6 +71,7 @@ struct ast_node {
 struct ast_node *make_expr_value(double value);
 struct ast_node *make_expr_name(char *name);
 struct ast_node *make_expr_color(char *color);
+struct ast_node *make_expr_color_rbg(double r, double g, double b);
 struct ast_node *make_cmd_forward(struct ast_node *expr);
 struct ast_node *make_cmd_backward(struct ast_node *expr);
 struct ast_node *make_cmd_right(struct ast_node *expr);
@@ -84,6 +85,10 @@ struct ast_node *make_cmd_call(char *name, struct ast_node *expr);
 struct ast_node *make_cmd_set(char *name, struct ast_node *expr);
 struct ast_node *make_expr_binop(char op, struct ast_node *left, struct ast_node *right);
 struct ast_node *make_expr_unop(char op, struct ast_node *expr);
+
+double get_color_r(char *color);
+double get_color_g(char *color);
+double get_color_b(char *color);
 
 // the abstract syntax tree
 

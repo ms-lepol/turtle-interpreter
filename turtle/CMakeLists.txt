@@ -5,7 +5,7 @@ project(TURTLE C)
 find_package(BISON)
 find_package(FLEX)
 
-set(CMAKE_C_FLAGS "-Wall -std=c99 -O2 -g")
+set(CMAKE_C_FLAGS "-Wall -std=c99 -O2 -g -fsanitize=address")
 
 bison_target(turtle-parser
   turtle-parser.y

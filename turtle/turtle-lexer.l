@@ -31,8 +31,6 @@ FUNC_SQRT sqrt
 FUNC_RANDOM random
 
 COLORS red|green|blue|cyan|magenta|yellow|black|grey|white
-PARENTHESIS_OPEN \(
-PARENTHESIS_CLOSE \)
 COMMENT \#.*$
 
 %%
