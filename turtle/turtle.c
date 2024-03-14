@@ -23,9 +23,11 @@ int main() {
   
   struct context ctx;
   context_create(&ctx);
-
+  
+  printf("----------------\n"); 
   // ast_eval(&root, &ctx);
-  //ast_print(&root);
+  printf("----------------\n"); 
+  ast_print(&root);
 
   ast_destroy(&root);
 
