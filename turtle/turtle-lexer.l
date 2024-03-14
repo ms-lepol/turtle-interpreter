@@ -11,12 +11,11 @@
 
 NUMBER -?(?:(?:0|[1-9]+[0-9]*)?\.[0-9]*(?:[eE][+-]?)?[0-9]*)|(?:0|[1-9]+[0-9]*)
 
-OP_MIN_UNI \-{NUMBER}
-OP_MIN_BIN {NUMBER}\-{NUMBER}
-OP_ADD {NUMBER}\+{NUMBER}
-OP_MULT {NUMBER}\*{NUMBER}
-OP_DIV {NUMBER}\/{NUMBER}
-OP_POW \^{NUMBER}
+OP_MIN  \-
+OP_ADD \+
+OP_MULT \*
+OP_DIV \/
+OP_POW \^
 
 KW_COLOR color
 KW_FORWARD fw|forward
@@ -38,20 +37,23 @@ COMMENT \#.*$
 
 %%
 
-{NUMBER}                 { yylval.value = strtod(yytext, NULL); printf("FLOAT %s\n", yytext); return VALUE; }
-{KW_COLOR}               { printf("KW_COLOR\n"); return KW_COLOR;}
-{COLORS}                 { yylval.name = strdup(yytext) ; printf("COLOR %s\n", yytext); return COLORS; }
-{KW_FORWARD}             { printf("FORWARD\n"); return KW_FORWARD;}
-{KW_BACKWARD}            { printf("BACKWARD\n"); return KW_BACKWARD;}
-{KW_LEFT}                { printf("LEFT\n"); return KW_LEFT;}
-{KW_RIGHT}               { printf("RIGHT\n"); return KW_RIGHT;}
+{NUMBER}                 { yylval.value = strtod(yytext, NULL); return VALUE; }
+{KW_COLOR}               { return KW_COLOR;}
+{COLORS}                 { yylval.name = strdup(yytext) ; return COLOR; }
+{KW_FORWARD}             { return KW_FORWARD;}
+{KW_BACKWARD}            { return KW_BACKWARD;}
+{KW_LEFT}                { return KW_LEFT;}
+{KW_RIGHT}               { return KW_RIGHT;}
 
-{OP_ADD}                { printf("ADD\n"); return '+'; }
-{OP_MIN_BIN}            { printf("MIN\n"); return '-'; }
-{OP_MULT}               { printf("MULT\n"); return '*'; }
-{OP_DIV}                { printf("DIV\n"); return '/'; }
-{OP_POW}                { printf("POW\n"); return '^'; }
-{OP_MIN_UNI}            { printf("MIN_UNI\n"); return '-'; }
+{OP_ADD}                { return '+'; }
+{OP_MULT}               { return '*'; }
+{OP_DIV}                { return '/'; }
+{OP_POW}                { return '^'; }
+{OP_MIN}                { return '-'; }
+'\('                    { return '('; }
+'\)'                    { return ')'; }
+'\{'                    { return '{'; }
+'\}'                    { return '}'; }
 
 {COMMENT}               /* ignore comments */
 

@@ -43,6 +43,7 @@ enum ast_kind {
   KIND_EXPR_BINOP,
   KIND_EXPR_BLOCK,
   KIND_EXPR_NAME,
+  KIND_EXPR_COLOR,
 };
 
 #define AST_CHILDREN_MAX 3
@@ -74,6 +75,7 @@ struct ast_node *make_cmd_forward(struct ast_node *expr);
 struct ast_node *make_cmd_backward(struct ast_node *expr);
 struct ast_node *make_cmd_right(struct ast_node *expr);
 struct ast_node *make_cmd_left(struct ast_node *expr);
+struct ast_node *make_cmd_color(struct ast_node *expr);
 
 struct ast_node *make_cmd_repeat(struct ast_node *expr, struct ast_node *block);
 struct ast_node *make_cmd_block(struct ast_node *cmd);

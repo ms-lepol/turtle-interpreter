@@ -27,7 +27,7 @@ void yyerror(struct ast *ret, const char *);
 
 %token <value>    VALUE       "value"
 %token <name>     NAME        "name"
-%token <name>     COLORS      "color"
+%token <name>     COLOR      "color"
 
 /*Movement Tokens*/
 %token            KW_FORWARD  
@@ -63,8 +63,8 @@ cmd:
 ;
 
 expr:
-  VALUE                { $$ = make_expr_value($1); }
-  | COLORS             { $$ = make_expr_color($1); }
+  VALUE                { $$ = make_expr_value($1);}
+  | COLOR              { $$ = make_expr_color($1);}
   | NAME               { $$ = make_expr_name($1); }
   |  expr '+' expr     { $$ = make_expr_binop('+',$1, $3); }
   |  expr '-' expr     { $$ = make_expr_binop('-',$1, $3); }
