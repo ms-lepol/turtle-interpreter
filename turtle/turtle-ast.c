@@ -276,7 +276,7 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
         double r = ast_node_eval(self->children[0], ctx);
         double g = ast_node_eval(self->children[1], ctx);
         double b = ast_node_eval(self->children[2], ctx);
-        printf("Color %f, %f, %f\n", r, g, b);
+        printf("Color %f %f %f\n", r, g, b);
       }
       else {
         ast_node_eval(self->children[0], ctx);
@@ -288,19 +288,29 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
       switch (self->u.cmd) {
         case CMD_FORWARD:
           if (DEV) printf("evaluating forward\n");
-          ast_node_eval(self->children[0], ctx);
+          double res_fw = ast_node_eval(self->children[0], ctx);
+          ctx->x += res_fw * cos((ctx->angle-90) * PI / 180);
+          ctx->y += res_fw * sin((ctx->angle-90) * PI / 180);
+          if (!ctx->up) {
+            printf("LineTo %f %f\n", ctx->x, ctx->y);
+          }
           break;
         case CMD_BACKWARD:
           if (DEV) printf("evaluating backward\n");
-          ast_node_eval(self->children[0], ctx);
+          double res_bw = ast_node_eval(self->children[0], ctx);
+          ctx->x -= res_bw * cos(ctx->angle * PI / 180);
+          ctx->y -= res_bw * sin(ctx->angle * PI / 180);
+          if (!ctx->up) {
+            printf("LineTo %f %f\n", ctx->x, ctx->y);
+          }
           break;
         case CMD_LEFT:
           if (DEV) printf("evaluating left\n");
-          ast_node_eval(self->children[0], ctx);
+          ctx->angle -= ast_node_eval(self->children[0], ctx);
           break;
         case CMD_RIGHT:
           if (DEV) printf("evaluating right\n");
-          ast_node_eval(self->children[0], ctx);
+          ctx->angle += ast_node_eval(self->children[0], ctx);
           break;
         case CMD_COLOR:
           if (DEV) printf("evaluating color\n");
