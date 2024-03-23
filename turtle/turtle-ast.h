@@ -77,6 +77,7 @@ struct ast_node *make_cmd_backward(struct ast_node *expr);
 struct ast_node *make_cmd_right(struct ast_node *expr);
 struct ast_node *make_cmd_left(struct ast_node *expr);
 struct ast_node *make_cmd_color(struct ast_node *expr);
+struct ast_node *make_cmd_color_rgb(struct ast_node* r,struct ast_node* g, struct ast_node* b);
 
 struct ast_node *make_cmd_repeat(struct ast_node *expr, struct ast_node *block);
 struct ast_node *make_cmd_block(struct ast_node *cmd);
@@ -84,6 +85,7 @@ struct ast_node *make_cmd_proc(char *name, struct ast_node *block);
 struct ast_node *make_cmd_call(char *name, struct ast_node *expr);
 struct ast_node *make_cmd_set(char *name, struct ast_node *expr);
 struct ast_node *make_expr_binop(char op, struct ast_node *left, struct ast_node *right);
+struct ast_node *make_expr_neg(struct ast_node *expr);
 struct ast_node *make_expr_unop(char op, struct ast_node *expr);
 
 double get_color_r(char *color);

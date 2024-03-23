@@ -23,6 +23,8 @@ void yyerror(struct ast *ret, const char *);
 
 %left '+' '-'
 %left '*' '/'
+%left '^'
+
 
 
 %token <value>    VALUE       "value"
@@ -38,6 +40,8 @@ void yyerror(struct ast *ret, const char *);
 /*Color Tokens*/
 %token            KW_COLOR    
 
+
+%token            KW_REPEAT
 /* TODO: add other tokens */
 
 %type <node> unit cmds cmd expr
@@ -55,11 +59,14 @@ cmds:
 ;
 
 cmd:
-     KW_FORWARD expr   { $$ = make_cmd_forward($2); }
-  |  KW_BACKWARD expr  { $$ = make_cmd_backward($2); }
-  |  KW_LEFT expr      { $$ = make_cmd_left($2); }
-  |  KW_RIGHT expr     { $$ = make_cmd_right($2); }
-  |  KW_COLOR expr     { $$ = make_cmd_color($2); }
+     KW_FORWARD expr                                { $$ = make_cmd_forward($2); }
+  |  KW_BACKWARD expr                               { $$ = make_cmd_backward($2); }
+  |  KW_LEFT expr                                   { $$ = make_cmd_left($2); }
+  |  KW_RIGHT expr                                  { $$ = make_cmd_right($2); }
+  |  KW_COLOR expr                                  { $$ = make_cmd_color($2); }
+  |  KW_COLOR expr ',' expr ',' expr                { $$ = make_cmd_color_rgb($2,$4,$6);}
+  |  KW_REPEAT expr cmd                             { $$ = make_cmd_repeat($2,$3); }
+  |  '{' cmds '}'                                   { $$ = make_cmd_block($2); }
 ;
 
 expr:
@@ -71,7 +78,6 @@ expr:
   |  expr '*' expr     { $$ = make_expr_binop('*',$1, $3); }
   |  expr '/' expr     { $$ = make_expr_binop('/',$1, $3); }
   |  expr '^' expr     { $$ = make_expr_binop('^',$1, $3); }
-  |  expr ',' expr     { $$ = make_expr_comma($1, $3); }
   |  '(' expr ')'      { $$ = $2; }
   |  '-' expr          { $$ = make_expr_neg($2); }
 ;

@@ -22,7 +22,7 @@ KW_FORWARD fw|forward
 KW_BACKWARD bw|backward
 KW_LEFT lt|left
 KW_RIGHT rt|right
-
+KW_REPEAT repeat
 
 FUNC_SIN sin
 FUNC_COS cos
@@ -43,15 +43,19 @@ COMMENT \#.*$
 {KW_LEFT}                { return KW_LEFT;}
 {KW_RIGHT}               { return KW_RIGHT;}
 
+{KW_REPEAT}              { return KW_REPEAT;}
+
+","                     { return ','; }
 {OP_ADD}                { return '+'; }
 {OP_MULT}               { return '*'; }
 {OP_DIV}                { return '/'; }
 {OP_POW}                { return '^'; }
 {OP_MIN}                { return '-'; }
-'\('                    { return '('; }
-'\)'                    { return ')'; }
-'\{'                    { return '{'; }
-'\}'                    { return '}'; }
+"("                    { return '('; }
+")"                    { return ')'; }
+"{"                    { return '{'; }
+"}"                    { return '}'; }
+
 
 {COMMENT}               /* ignore comments */
 

@@ -167,6 +167,42 @@ struct ast_node *make_cmd_color(struct ast_node* expr) {
   return node;
 }
 
+struct ast_node *make_cmd_color_rgb(struct ast_node* r,struct ast_node* g, struct ast_node* b){
+  if (DEV) printf("make_cmd_color_rbg\n");
+  struct ast_node *node = calloc(1,sizeof(struct ast_node));
+
+  node->kind= KIND_CMD_SIMPLE;
+  node->u.cmd = CMD_COLOR;
+  node->children_count = 3;
+  node->children[0] = r;
+  node->children[1] = g;
+  node->children[2] = b;
+  return node;
+}
+
+
+/*Complex CMD Constructor*/
+
+struct ast_node *make_cmd_repeat(struct ast_node* expr, struct ast_node* block) {
+  if (DEV) printf("make_cmd_repeat\n");
+  struct ast_node *node = calloc(1,sizeof(struct ast_node));
+  
+  node->kind = KIND_CMD_REPEAT;
+  node->children_count = 2;
+  node->children[0] = expr;
+  node->children[1] = block;
+  return node;
+}
+
+struct ast_node *make_cmd_block(struct ast_node* block) {
+  if (DEV) printf("make_cmd_block\n");
+  struct ast_node *node = calloc(1,sizeof(struct ast_node));
+  
+  node->kind = KIND_CMD_BLOCK;
+  node->children_count = 1;
+  node->children[0] = block;
+  return node;
+}
 
 /*
  * ast destructor
@@ -293,6 +329,8 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
           ctx->y += res_fw * sin((ctx->angle-90) * PI / 180);
           if (!ctx->up) {
             printf("LineTo %f %f\n", ctx->x, ctx->y);
+          } else {
+            printf("MoveTo %f %f\n", ctx->x, ctx->y);
           }
           break;
         case CMD_BACKWARD:
@@ -302,6 +340,8 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
           ctx->y -= res_bw * sin(ctx->angle * PI / 180);
           if (!ctx->up) {
             printf("LineTo %f %f\n", ctx->x, ctx->y);
+          } else {
+             printf("MoveTo %f %f\n", ctx->x, ctx->y);
           }
           break;
         case CMD_LEFT:
@@ -314,7 +354,19 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
           break;
         case CMD_COLOR:
           if (DEV) printf("evaluating color\n");
-          ast_node_eval(self->children[0], ctx);
+          if (self->children_count==1){ //KW_COLOR
+            ast_node_eval(self->children[0], ctx);
+          }
+          if (self->children_count==3){ //COLOR RGB DEFINITION
+            double r = ast_node_eval(self->children[0], ctx);
+
+            double g = ast_node_eval(self->children[1], ctx);
+
+            double b = ast_node_eval(self->children[2], ctx);
+
+             printf("Color %f %f %f\n", r, g, b);
+          }
+          
           break;
         default:
           printf("unknown command\n");
@@ -327,8 +379,11 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
       break;
     case KIND_CMD_REPEAT:
       if (DEV) printf("evaluating repeat\n");
-      ast_node_eval(self->children[0], ctx);
-      ast_node_eval(self->children[1], ctx); 
+      double count = ast_node_eval(self->children[0], ctx);
+      for (int i = 0; i < count; i++) {
+        ast_node_eval(self->children[1], ctx); 
+      }
+      
       break;
     case KIND_CMD_BLOCK:
       if (DEV) printf("evaluating block\n");
@@ -454,9 +509,7 @@ void ast_node_print(const struct ast_node *self){
     case KIND_CMD_REPEAT:
       printf("repeat ");
       ast_node_print(self->children[0]);
-      printf(" [ ");
       ast_node_print(self->children[1]);
-      printf(" ] ");
       break;
     
     case KIND_CMD_BLOCK:
