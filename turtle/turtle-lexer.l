@@ -22,6 +22,10 @@ KW_FORWARD fw|forward
 KW_BACKWARD bw|backward
 KW_LEFT lt|left
 KW_RIGHT rt|right
+KW_HEADING hd|heading
+KW_POSITION pos|position
+KW_HOME home
+KW_PRINT print
 KW_REPEAT repeat
 
 FUNC_SIN sin
@@ -32,14 +36,22 @@ FUNC_RANDOM random
 
 COLORS red|green|blue|cyan|magenta|yellow|black|grey|white
 COMMENT \#.*$
+VAR_NAME [A-Z][A-Z0-9]*
+PRINT_MSG [A-Z0-9]*
 
 %%
 
 {NUMBER}                 { yylval.value = strtod(yytext, NULL); return VALUE; }
+{VAR_NAME}               { yylval.name = strdup(yytext); return NAME; }
+{PRINT_MSG}              { yylval.name = strdup(yytext); return PRINT_MSG; }
 {KW_COLOR}               { return KW_COLOR;}
 {COLORS}                 { yylval.name = strdup(yytext) ; return COLOR; }
 {KW_FORWARD}             { return KW_FORWARD;}
 {KW_BACKWARD}            { return KW_BACKWARD;}
+{KW_HEADING}             { return KW_HEADING;}
+{KW_POSITION}            { return KW_POSITION;}
+{KW_HOME}                { return KW_HOME;}
+{KW_PRINT}               { return KW_PRINT;}
 {KW_LEFT}                { return KW_LEFT;}
 {KW_RIGHT}               { return KW_RIGHT;}
 

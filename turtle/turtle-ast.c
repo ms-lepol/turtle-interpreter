@@ -203,6 +203,52 @@ struct ast_node *make_cmd_block(struct ast_node* block) {
   node->children[0] = block;
   return node;
 }
+// This is a constructor a print command node with an message to print on stderr
+struct ast_node *make_cmd_print(const char * msg) {
+  if (DEV) printf("make_cmd_print\n");
+  struct ast_node *node = calloc(1,sizeof(struct ast_node));
+  
+  node->kind = KIND_CMD_SIMPLE;
+  node->u.cmd = CMD_PRINT;
+  node->u.name = msg;
+  node->children_count = 0;
+  return node;
+}
+
+// This is a constructor a home command node
+struct ast_node *make_cmd_home(struct ast_node* expr_x, struct ast_node* expr_y) {
+  if (DEV) printf("make_cmd_home\n");
+  struct ast_node *node = calloc(1,sizeof(struct ast_node));
+  
+  node->kind = KIND_CMD_SIMPLE;
+  node->u.cmd = CMD_HOME;
+  node->children_count = 2;
+  node->children[0] = expr_x;
+  node->children[0] = expr_y;
+  return node;
+}
+
+// This is a constructor a heading command node
+struct ast_node *make_cmd_heading() {
+  if (DEV) printf("make_cmd_heading\n");
+  struct ast_node *node = calloc(1,sizeof(struct ast_node));
+  
+  node->kind = KIND_CMD_SIMPLE;
+  node->u.cmd = CMD_HEADING;
+  // TODO
+  return node;
+}
+
+// This is a constructor a position command node
+struct ast_node *make_cmd_position() {
+  if (DEV) printf("make_cmd_position\n");
+  struct ast_node *node = calloc(1,sizeof(struct ast_node));
+  
+  node->kind = KIND_CMD_SIMPLE;
+  node->u.cmd = CMD_POSITION;
+  // TODO
+  return node;
+}
 
 /*
  * ast destructor
@@ -343,6 +389,24 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
           } else {
              printf("MoveTo %f %f\n", ctx->x, ctx->y);
           }
+          break;
+        case CMD_PRINT:
+          if (DEV) printf("evaluating print\n");
+            fprintf(stderr, "%s", self->u.name);
+          break;
+        case CMD_POSITION:
+          if (DEV) printf("evaluating position\n");
+          break;
+        case CMD_HEADING:
+          if (DEV) printf("evaluating heading\n");
+          break;
+        case CMD_HOME:
+          if (DEV) printf("evaluating home\n");
+          ctx->x = 0;
+          ctx->y = 0;
+          ctx->angle = 0;
+          ctx->up = true;
+          printf("Color 0.0 0.0 0.0\n");
           break;
         case CMD_LEFT:
           if (DEV) printf("evaluating left\n");

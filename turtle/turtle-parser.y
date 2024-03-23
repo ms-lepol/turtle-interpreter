@@ -29,13 +29,16 @@ void yyerror(struct ast *ret, const char *);
 
 %token <value>    VALUE       "value"
 %token <name>     NAME        "name"
-%token <name>     COLOR      "color"
+%token <name>     COLOR       "color"
+%token <name>     PRINT_MSG   "print_msg"
 
 /*Movement Tokens*/
 %token            KW_FORWARD  
 %token            KW_BACKWARD 
 %token            KW_LEFT     
 %token            KW_RIGHT    
+%token            KW_HEADING
+%token            KW_POSITION
 
 /*Color Tokens*/
 %token            KW_COLOR    
@@ -43,6 +46,9 @@ void yyerror(struct ast *ret, const char *);
 
 %token            KW_REPEAT
 /* TODO: add other tokens */
+
+%token             KW_HOME
+%token             KW_PRINT
 
 %type <node> unit cmds cmd expr
 
@@ -59,11 +65,15 @@ cmds:
 ;
 
 cmd:
-     KW_FORWARD expr                                { $$ = make_cmd_forward($2); }
-  |  KW_BACKWARD expr                               { $$ = make_cmd_backward($2); }
-  |  KW_LEFT expr                                   { $$ = make_cmd_left($2); }
-  |  KW_RIGHT expr                                  { $$ = make_cmd_right($2); }
-  |  KW_COLOR expr                                  { $$ = make_cmd_color($2); }
+     KW_FORWARD expr                                         { $$ = make_cmd_forward($2);      }
+  |  KW_BACKWARD expr                                        { $$ = make_cmd_backward($2);     }
+  |  KW_LEFT expr                                            { $$ = make_cmd_left($2);         }
+  |  KW_RIGHT expr                                           { $$ = make_cmd_right($2);        }
+  |  KW_COLOR expr                                           { $$ = make_cmd_color($2);        }
+  |  KW_HEADING expr            { $$ = make_cmd_heading($2);      }
+  |  KW_HOME                    { $$ = make_cmd_home();           }
+  |  KW_POSITION expr expr      { $$ = make_cmd_position($2, $3); }
+  |  KW_PRINT PRINT_MSG         { $$ = make_cmd_print($2);        }
   |  KW_COLOR expr ',' expr ',' expr                { $$ = make_cmd_color_rgb($2,$4,$6);}
   |  KW_REPEAT expr cmd                             { $$ = make_cmd_repeat($2,$3); }
   |  '{' cmds '}'                                   { $$ = make_cmd_block($2); }
