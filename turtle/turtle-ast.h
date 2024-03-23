@@ -10,13 +10,13 @@ enum ast_cmd {
   CMD_DOWN,
   CMD_RIGHT,
   CMD_LEFT,
-  CMD_HEADING,
+  CMD_HEADING, // TODO
   CMD_FORWARD,
   CMD_BACKWARD,
-  CMD_POSITION,
-  CMD_HOME,
+  CMD_POSITION, // TODO
+  CMD_HOME, // TODO
   CMD_COLOR,
-  CMD_PRINT,
+  CMD_PRINT, // TODO
 };
 
 // internal functions
@@ -74,6 +74,10 @@ struct ast_node *make_expr_color(char *color);
 struct ast_node *make_expr_color_rbg(double r, double g, double b);
 struct ast_node *make_cmd_forward(struct ast_node *expr);
 struct ast_node *make_cmd_backward(struct ast_node *expr);
+struct ast_node *make_cmd_heading(); // TODO
+struct ast_node *make_cmd_print(const char * msg);
+struct ast_node *make_cmd_home();
+struct ast_node *make_cmd_position(); // TODO
 struct ast_node *make_cmd_right(struct ast_node *expr);
 struct ast_node *make_cmd_left(struct ast_node *expr);
 struct ast_node *make_cmd_color(struct ast_node *expr);
