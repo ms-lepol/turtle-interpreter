@@ -5,5 +5,3 @@ repeat 7 {
   right 4 * 360 / 7
 }
 
-fw 100
-home

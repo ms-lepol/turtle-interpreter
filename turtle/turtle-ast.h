@@ -76,9 +76,18 @@ struct ast_node *make_expr_value(double value);
 struct ast_node *make_expr_name(char *name);
 struct ast_node *make_expr_color(char *color);
 struct ast_node *make_expr_color_rbg(double r, double g, double b);
+
+struct ast_node *make_expr_func_cos(struct ast_node *expr);
+struct ast_node *make_expr_func_sin(struct ast_node *expr);
+struct ast_node *make_expr_func_tan(struct ast_node *expr);
+struct ast_node *make_expr_func_random(struct ast_node *expr, struct ast_node *expr2);
+struct ast_node *make_expr_func_sqrt(struct ast_node *expr);
+
 struct ast_node *make_cmd_forward(struct ast_node *expr);
 struct ast_node *make_cmd_backward(struct ast_node *expr);
 struct ast_node *make_cmd_heading(struct ast_node *expr);
+struct ast_node *make_cmd_up();
+struct ast_node *make_cmd_down();
 struct ast_node *make_cmd_print(const char * msg);
 struct ast_node *make_cmd_home();
 struct ast_node *make_cmd_position(struct ast_node* expr_x, struct ast_node* expr_y);
@@ -90,7 +99,7 @@ struct ast_node *make_cmd_color_rgb(struct ast_node* r,struct ast_node* g, struc
 struct ast_node *make_cmd_repeat(struct ast_node *expr, struct ast_node *block);
 struct ast_node *make_cmd_block(struct ast_node *cmd);
 struct ast_node *make_cmd_proc(char *name, struct ast_node *block);
-struct ast_node *make_cmd_call(char *name, struct ast_node *expr);
+struct ast_node *make_cmd_call(char *name);
 struct ast_node *make_cmd_set(char *name, struct ast_node *expr);
 struct ast_node *make_expr_binop(char op, struct ast_node *left, struct ast_node *right);
 struct ast_node *make_expr_neg(struct ast_node *expr);
