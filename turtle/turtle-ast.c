@@ -149,8 +149,6 @@ struct ast_node *make_cmd_right(struct ast_node* expr) {
   return node;
 }
 
-
-
 /*
  * Various cmd constructors
  */
@@ -203,6 +201,7 @@ struct ast_node *make_cmd_block(struct ast_node* block) {
   node->children[0] = block;
   return node;
 }
+
 // This is a constructor a print command node with an message to print on stderr
 struct ast_node *make_cmd_print(const char * msg) {
   if (DEV) printf("make_cmd_print\n");
@@ -216,37 +215,38 @@ struct ast_node *make_cmd_print(const char * msg) {
 }
 
 // This is a constructor a home command node
-struct ast_node *make_cmd_home(struct ast_node* expr_x, struct ast_node* expr_y) {
+struct ast_node *make_cmd_home() {
   if (DEV) printf("make_cmd_home\n");
   struct ast_node *node = calloc(1,sizeof(struct ast_node));
   
   node->kind = KIND_CMD_SIMPLE;
   node->u.cmd = CMD_HOME;
-  node->children_count = 2;
-  node->children[0] = expr_x;
-  node->children[0] = expr_y;
+  node->children_count = 0;
   return node;
 }
 
 // This is a constructor a heading command node
-struct ast_node *make_cmd_heading() {
+struct ast_node *make_cmd_heading(struct ast_node* expr) {
   if (DEV) printf("make_cmd_heading\n");
   struct ast_node *node = calloc(1,sizeof(struct ast_node));
   
   node->kind = KIND_CMD_SIMPLE;
   node->u.cmd = CMD_HEADING;
-  // TODO
+  node->children_count = 1;
+  node->children[0] = expr;
   return node;
 }
 
 // This is a constructor a position command node
-struct ast_node *make_cmd_position() {
+struct ast_node *make_cmd_position(struct ast_node* expr_x, struct ast_node* expr_y) {
   if (DEV) printf("make_cmd_position\n");
   struct ast_node *node = calloc(1,sizeof(struct ast_node));
   
   node->kind = KIND_CMD_SIMPLE;
   node->u.cmd = CMD_POSITION;
-  // TODO
+  node->children_count = 2;
+  node->children[0] = expr_x;
+  node->children[1] = expr_y;
   return node;
 }
 
@@ -396,9 +396,12 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
           break;
         case CMD_POSITION:
           if (DEV) printf("evaluating position\n");
+          ctx->x = ast_node_eval(self->children[0], ctx);
+          ctx->y = ast_node_eval(self->children[1], ctx);
           break;
         case CMD_HEADING:
           if (DEV) printf("evaluating heading\n");
+          ctx->angle = ast_node_eval(self->children[0], ctx);
           break;
         case CMD_HOME:
           if (DEV) printf("evaluating home\n");
