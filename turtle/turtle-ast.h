@@ -74,10 +74,10 @@ struct ast_node *make_expr_color(char *color);
 struct ast_node *make_expr_color_rbg(double r, double g, double b);
 struct ast_node *make_cmd_forward(struct ast_node *expr);
 struct ast_node *make_cmd_backward(struct ast_node *expr);
-struct ast_node *make_cmd_heading(); // TODO
+struct ast_node *make_cmd_heading(struct ast_node *expr);
 struct ast_node *make_cmd_print(const char * msg);
 struct ast_node *make_cmd_home();
-struct ast_node *make_cmd_position(); // TODO
+struct ast_node *make_cmd_position(struct ast_node* expr_x, struct ast_node* expr_y);
 struct ast_node *make_cmd_right(struct ast_node *expr);
 struct ast_node *make_cmd_left(struct ast_node *expr);
 struct ast_node *make_cmd_color(struct ast_node *expr);
