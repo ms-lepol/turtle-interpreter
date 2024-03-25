@@ -1,3 +1,7 @@
+#ifndef TURTLE_HASHMAP_PROCVAR_H
+#define TURTLE_AST_H
+#include <malloc.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -25,3 +29,5 @@ void hashmap_procvar_grow(hashmap_procvar_t *map);
 struct ast_node *hashmap_procvar_get(hashmap_procvar_t *map,const char *key);
 void hashmap_procvar_remove(hashmap_procvar_t *map, char *key);
 void hashmap_procvar_dump(hashmap_procvar_t *map);
+
+#endif /* TURTLE_HASHMAP_PROCVAR_H */

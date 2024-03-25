@@ -4,3 +4,6 @@ repeat 7 {
   fw 300
   right 4 * 360 / 7
 }
+
+fw 100
+home

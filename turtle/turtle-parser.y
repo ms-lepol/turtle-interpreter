@@ -41,10 +41,16 @@ void yyerror(struct ast *ret, const char *);
 %token            KW_POSITION
 
 /*Color Tokens*/
-%token            KW_COLOR    
+%token            KW_COLOR
 
+/*Control Tokens*/
 
 %token            KW_REPEAT
+%token            KW_PROC
+%token            KW_SET
+%token            KW_CALL
+
+/*Misc Tokens*/
 %token            KW_HOME
 %token            KW_PRINT
 
@@ -71,10 +77,10 @@ cmd:
   |  KW_HEADING expr                    { $$ = make_cmd_heading($2);      }
   |  KW_HOME                            { $$ = make_cmd_home();           }
   |  KW_POSITION expr expr              { $$ = make_cmd_position($2, $3); }
-  |  KW_PRINT PRINT_MSG                 { $$ = make_cmd_print($2);        }
   |  KW_COLOR expr ',' expr ',' expr    { $$ = make_cmd_color_rgb($2,$4,$6);}
   |  KW_REPEAT expr cmd                 { $$ = make_cmd_repeat($2,$3); }
   |  '{' cmds '}'                       { $$ = make_cmd_block($2); }
+  |  KW_PRINT PRINT_MSG                 { $$ = make_cmd_print($2);        }
 ;
 
 expr:

@@ -1,4 +1,5 @@
 #include "turtle-ast.h"
+#include "hashmap_procvar.h"
 
 #include <assert.h>
 #include <stdarg.h>
@@ -289,7 +290,14 @@ void context_create(struct context *self) {
   self->angle = 0;
   self->up = 0;
 
+  self->variables = hashmap_procvar_create(10);
+  self->procedures = hashmap_procvar_create(10);
+}
 
+// This function destroys the context at the end of the program
+void context_destroy(struct context *self) {
+  hashmap_procvar_destroy(self->variables);
+  hashmap_procvar_destroy(self->procedures);
 }
 
 /*
@@ -410,6 +418,7 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
           ctx->angle = 0;
           ctx->up = true;
           printf("Color 0.0 0.0 0.0\n");
+          printf("MoveTo 0.0 0.0\n");
           break;
         case CMD_LEFT:
           if (DEV) printf("evaluating left\n");
@@ -562,6 +571,25 @@ void ast_node_print(const struct ast_node *self){
           printf("color ");
           ast_node_print(self->children[0]);
           break;
+        case CMD_PRINT:
+          printf("print %s\n", self->u.name);
+          break;
+        case CMD_HOME:
+          printf("home\n");
+          break;
+        case CMD_HEADING:
+          printf("heading ");
+          ast_node_print(self->children[0]);
+          printf("\n");
+          break;
+        case CMD_POSITION:
+          printf("position ");
+          ast_node_print(self->children[0]);
+          printf(" ");
+          ast_node_print(self->children[1]);
+          printf("\n");
+          break;
+
         default:
           printf("unknown command\n");
           break;

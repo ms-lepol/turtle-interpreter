@@ -1,8 +1,12 @@
 #ifndef TURTLE_AST_H
 #define TURTLE_AST_H
 
+
 #include <stddef.h>
 #include <stdbool.h>
+
+// Hashmap for procedure & variables entry (from turtle/hashmap_procvar.h) - technique de filoutage
+struct hashmap_procvar_t;
 
 // simple commands
 enum ast_cmd {
@@ -10,13 +14,13 @@ enum ast_cmd {
   CMD_DOWN,
   CMD_RIGHT,
   CMD_LEFT,
-  CMD_HEADING, // TODO
+  CMD_HEADING, //A TEST
   CMD_FORWARD,
   CMD_BACKWARD,
-  CMD_POSITION, // TODO
-  CMD_HOME, // TODO
+  CMD_POSITION,// A TEST
+  CMD_HOME, // A TEST
   CMD_COLOR,
-  CMD_PRINT, // TODO
+  CMD_PRINT, // A TEST
 };
 
 // internal functions
@@ -97,10 +101,6 @@ double get_color_g(char *color);
 double get_color_b(char *color);
 
 // the abstract syntax tree
-
-
-
-
 // root of the abstract syntax tree
 struct ast {
   struct ast_node *unit;
@@ -119,12 +119,17 @@ struct context {
   double angle;
   bool up;
 
-  // TODO: add procedure handling
-  // TODO: add variable handling
+  //procedure handling
+  struct hashmap_procvar_t *procedures;
+  //variable handling
+  struct hashmap_procvar_t *variables;
 };
 
 // create an initial context
 void context_create(struct context *self);
+
+// destroy the context
+void context_destroy(struct context *self);
 
 // print the tree as if it was a Turtle program
 void ast_print(const struct ast *self);
