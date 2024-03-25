@@ -542,8 +542,8 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
         case CMD_BACKWARD:
           if (DEV) printf("evaluating backward\n");
           double res_bw = ast_node_eval(self->children[0], ctx);
-          ctx->x -= res_bw * cos(ctx->angle * PI / 180);
-          ctx->y -= res_bw * sin(ctx->angle * PI / 180);
+          ctx->x -= res_bw * cos((ctx->angle-90) * PI / 180);
+          ctx->y -= res_bw * sin((ctx->angle-90) * PI / 180);
           if (!ctx->up) {
             printf("LineTo %f %f\n", ctx->x, ctx->y);
           } else {
@@ -618,7 +618,9 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
       if (DEV) printf("evaluating call\n");
       char *name = self->children[0]->u.name;
       struct ast_node *proc = hashmap_procvar_get(ctx->procedures, name);
+      
       if (proc) {
+        // We evaluate the procedure
         ast_node_eval(proc, ctx);
       } else {
         fprintf(stderr, "Procedure %s not found\n", name);

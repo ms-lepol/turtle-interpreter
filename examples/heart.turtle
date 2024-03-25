@@ -1,0 +1,112 @@
+proc ESPACE {
+    up
+    heading 90
+    fw 30 left 90
+    down
+}
+proc J {
+     #J
+    heading 90
+    fw 30
+    left 90
+    fw 100
+    left 90
+    fw 20
+    bw 40
+    fw 20
+    left 90
+    fw 100
+    left 90
+}
+proc U {
+     #U
+    call ESPACE
+    fw 100
+    bw 100
+    right 90
+    fw 40
+    left 90
+    fw 100
+    bw 100
+    right 90
+}
+
+proc B {
+    #B
+    call ESPACE
+    fw 100
+    right 90
+    fw 30
+    right 90
+    fw 50
+    right 90
+    fw 30
+    bw 40
+    left 90
+    fw 50
+    right 90
+    fw 40
+    bw 40
+    left 90
+}
+proc E {
+    #E
+    call ESPACE
+    fw 100
+    right 90
+    fw 40
+    bw 40 
+    right 90
+    fw 50
+    left 90
+    fw 30
+    bw 30
+    right 90
+    fw 50
+    left 90
+    fw 40
+}
+proc JUBE {
+   call J call U call B call E
+}
+
+proc HALFCIRCLE {
+  repeat 180 {
+    fw 150
+    down
+    fw 2
+    up
+    bw 152
+    left 1
+  }
+}
+
+proc HEART {
+    heading 0
+    right 45
+    fw 440
+    up
+    heading 270
+    fw 150
+    heading 90
+    call HALFCIRCLE
+    up
+    heading 270
+    fw 300
+    heading 90
+    call HALFCIRCLE
+    up
+    heading 270
+    fw 150
+    heading 90
+    right 45
+    down
+    fw 440
+}
+
+call JUBE
+up
+position 115 , 200
+down
+color red
+call HEART
