@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
 
 #define PI 3.141592653589793
 #define SQRT2 1.41421356237309504880
@@ -522,7 +523,7 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
           break;
         case FUNC_RANDOM:
           if (DEV) printf("evaluating random\n");
-          return rand() % (int)(ast_node_eval(self->children[0], ctx)-ast_node_eval(self->children[1], ctx));
+          return drand(ast_node_eval(self->children[0], ctx), ast_node_eval(self->children[1], ctx));
       
       }
     case KIND_CMD_SIMPLE:
@@ -877,3 +878,8 @@ double get_color_b(char *color){
   return 0;
  }
 
+// Function to generate random numbers between low and high - from https://stackoverflow.com/questions/55766058/how-can-i-generate-random-doubles-in-c
+double drand ( double low, double high ){
+    srand((unsigned int)clock());
+     return ( (double)rand() * ( high - low ) ) / (double)RAND_MAX + low;
+}

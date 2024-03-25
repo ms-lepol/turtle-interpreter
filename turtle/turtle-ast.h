@@ -70,19 +70,24 @@ struct ast_node {
 };
 
 
-// TODO: make some constructors to use in parser.y
-// for example:
+//Constructors to use in parser.y
+//Expr constructors
 struct ast_node *make_expr_value(double value);
 struct ast_node *make_expr_name(char *name);
 struct ast_node *make_expr_color(char *color);
 struct ast_node *make_expr_color_rbg(double r, double g, double b);
+struct ast_node *make_expr_binop(char op, struct ast_node *left, struct ast_node *right);
+struct ast_node *make_expr_neg(struct ast_node *expr);
+struct ast_node *make_expr_unop(char op, struct ast_node *expr);
 
+//Expr functions constructors
 struct ast_node *make_expr_func_cos(struct ast_node *expr);
 struct ast_node *make_expr_func_sin(struct ast_node *expr);
 struct ast_node *make_expr_func_tan(struct ast_node *expr);
 struct ast_node *make_expr_func_random(struct ast_node *expr, struct ast_node *expr2);
 struct ast_node *make_expr_func_sqrt(struct ast_node *expr);
 
+//Simple command constructors
 struct ast_node *make_cmd_forward(struct ast_node *expr);
 struct ast_node *make_cmd_backward(struct ast_node *expr);
 struct ast_node *make_cmd_heading(struct ast_node *expr);
@@ -96,18 +101,18 @@ struct ast_node *make_cmd_left(struct ast_node *expr);
 struct ast_node *make_cmd_color(struct ast_node *expr);
 struct ast_node *make_cmd_color_rgb(struct ast_node* r,struct ast_node* g, struct ast_node* b);
 
+//Complex command constructors
 struct ast_node *make_cmd_repeat(struct ast_node *expr, struct ast_node *block);
 struct ast_node *make_cmd_block(struct ast_node *cmd);
 struct ast_node *make_cmd_proc(char *name, struct ast_node *block);
 struct ast_node *make_cmd_call(char *name);
 struct ast_node *make_cmd_set(char *name, struct ast_node *expr);
-struct ast_node *make_expr_binop(char op, struct ast_node *left, struct ast_node *right);
-struct ast_node *make_expr_neg(struct ast_node *expr);
-struct ast_node *make_expr_unop(char op, struct ast_node *expr);
 
+//Helpers
 double get_color_r(char *color);
 double get_color_g(char *color);
 double get_color_b(char *color);
+double drand ( double low, double high );
 
 // the abstract syntax tree
 // root of the abstract syntax tree
