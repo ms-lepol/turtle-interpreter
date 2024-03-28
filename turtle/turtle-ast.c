@@ -430,6 +430,10 @@ void context_create(struct context *self) {
 
   self->variables = hashmap_procvar_create(10);
   self->procedures = hashmap_procvar_create(10);
+
+  hashmap_procvar_set(self->variables, "PI", make_expr_value(PI));
+  hashmap_procvar_set(self->variables, "SQRT2", make_expr_value(SQRT2));
+  hashmap_procvar_set(self->variables, "SQRT3", make_expr_value(SQRT3));
 }
 
 // This function destroys the context at the end of the program
