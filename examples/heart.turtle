@@ -86,7 +86,7 @@ proc HEART {
     right 45
     fw 440
     up
-    heading 270
+    heading (90*3)
     fw 150
     heading 90
     call HALFCIRCLE
