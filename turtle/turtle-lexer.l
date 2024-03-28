@@ -49,52 +49,53 @@ VAR_NAME [A-Z][A-Z0-9]*
 PRINT_MSG [A-Za-z0-9]*
 
 %%
-{NUMBER}                 { yylval.value = strtod(yytext, NULL); return VALUE; }
-{VAR_NAME}               { yylval.name = strdup(yytext); return NAME; }
 
-{KW_CMD_COLOR}               { return KW_CMD_COLOR;}
-{COLORS}                     { yylval.name = strdup(yytext) ; return COLOR; }
-{KW_CMD_FORWARD}             { return KW_CMD_FORWARD;}
-{KW_CMD_BACKWARD}            { return KW_CMD_BACKWARD;}
-{KW_CMD_HEADING}             { return KW_CMD_HEADING;}
-{KW_CMD_POSITION}            { return KW_CMD_POSITION;}
-{KW_CMD_HOME}                { return KW_CMD_HOME;}
-{KW_CMD_PRINT}               { return KW_CMD_PRINT;}
-{KW_CMD_LEFT}                { return KW_CMD_LEFT;}
-{KW_CMD_RIGHT}               { return KW_CMD_RIGHT;}
-{KW_CMD_UP}                  { return KW_CMD_UP;}
-{KW_CMD_DOWN}                { return KW_CMD_DOWN;}
+{NUMBER}                       { yylval.value = strtod(yytext, NULL); return VALUE; }
+{VAR_NAME}                     { yylval.name = strdup(yytext); return NAME; }
 
-{KW_FUNC_SIN}                 { return KW_FUNC_SIN;}
-{KW_FUNC_COS}                 { return KW_FUNC_COS;}
-{KW_FUNC_TAN}                 { return KW_FUNC_TAN;}
-{KW_FUNC_SQRT}                { return KW_FUNC_SQRT;}
-{KW_FUNC_RANDOM}              { return KW_FUNC_RANDOM;}
+{KW_CMD_COLOR}                 { return KW_CMD_COLOR; }
+{COLORS}                       { yylval.name = strdup(yytext) ; return COLOR; }
+{KW_CMD_FORWARD}               { return KW_CMD_FORWARD; }
+{KW_CMD_BACKWARD}              { return KW_CMD_BACKWARD; }
+{KW_CMD_HEADING}               { return KW_CMD_HEADING; }
+{KW_CMD_POSITION}              { return KW_CMD_POSITION; }
+{KW_CMD_HOME}                  { return KW_CMD_HOME; }
+{KW_CMD_PRINT}                 { return KW_CMD_PRINT; }
+{KW_CMD_LEFT}                  { return KW_CMD_LEFT; }
+{KW_CMD_RIGHT}                 { return KW_CMD_RIGHT; }
+{KW_CMD_UP}                    { return KW_CMD_UP; }
+{KW_CMD_DOWN}                  { return KW_CMD_DOWN; }
 
-{KW_REPEAT}              { return KW_REPEAT;}
-{KW_SET}                 { return KW_SET;}
-{KW_PROC}                { return KW_PROC;}
-{KW_CALL}                { return KW_CALL;}
+{KW_FUNC_SIN}                  { return KW_FUNC_SIN; }
+{KW_FUNC_COS}                  { return KW_FUNC_COS; }
+{KW_FUNC_TAN}                  { return KW_FUNC_TAN; }
+{KW_FUNC_SQRT}                 { return KW_FUNC_SQRT; }
+{KW_FUNC_RANDOM}               { return KW_FUNC_RANDOM; }
 
-
-
-","                     { return ','; }
-{OP_ADD}                { return '+'; }
-{OP_MULT}               { return '*'; }
-{OP_DIV}                { return '/'; }
-{OP_POW}                { return '^'; }
-{OP_MIN}                { return '-'; }
-"("                    { return '('; }
-")"                    { return ')'; }
-"{"                    { return '{'; }
-"}"                    { return '}'; }
+{KW_REPEAT}                    { return KW_REPEAT; }
+{KW_SET}                       { return KW_SET; }
+{KW_PROC}                      { return KW_PROC; }
+{KW_CALL}                      { return KW_CALL; }
 
 
-{PRINT_MSG}              { yylval.name = strdup(yytext); return PRINT_MSG; }
-{COMMENT}               /* ignore comments */
+
+","                            { return ','; }
+{OP_ADD}                       { return '+'; }
+{OP_MULT}                      { return '*'; }
+{OP_DIV}                       { return '/'; }
+{OP_POW}                       { return '^'; }
+{OP_MIN}                       { return '-'; }
+"("                            { return '('; }
+")"                            { return ')'; }
+"{"                            { return '{'; }
+"}"                            { return '}'; }
 
 
-[\n\t ]*              /* whitespace */
-.                     { fprintf(stderr, "Unknown token: '%s'\n", yytext); exit(EXIT_FAILURE); }
+{PRINT_MSG}                    { yylval.name = strdup(yytext); return PRINT_MSG; }
+{COMMENT}                      /* ignore comments */
+
+
+[\n\t ]*                       /* whitespace */
+.                              { fprintf(stderr, "Unknown token: '%s'\n", yytext); exit(EXIT_FAILURE); }
 
 %%
