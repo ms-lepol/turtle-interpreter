@@ -1,12 +1,11 @@
 #ifndef TURTLE_AST_H
 #define TURTLE_AST_H
 
-
+#include "hashmap_procvar.h"
 #include <stddef.h>
 #include <stdbool.h>
 
 // Hashmap for procedure & variables entry (from turtle/hashmap_procvar.h) - technique de filoutage
-struct hashmap_procvar_t;
 
 // simple commands
 enum ast_cmd {
@@ -94,7 +93,7 @@ struct ast_node *make_cmd_backward(struct ast_node *expr);
 struct ast_node *make_cmd_heading(struct ast_node *expr);
 struct ast_node *make_cmd_up();
 struct ast_node *make_cmd_down();
-struct ast_node *make_cmd_print(const char * msg);
+struct ast_node *make_cmd_print(char * msg);
 struct ast_node *make_cmd_home();
 struct ast_node *make_cmd_position(struct ast_node* expr_x, struct ast_node* expr_y);
 struct ast_node *make_cmd_right(struct ast_node *expr);
@@ -135,9 +134,16 @@ struct context {
   bool up;
 
   //procedure handling
-  struct hashmap_procvar_t *procedures;
+  hashmap_procvar_t *procedures;
   //variable handling
-  struct hashmap_procvar_t *variables;
+  hashmap_procvar_t *variables;
+  //const handling
+  hashmap_procvar_t *consts;
+
+  //Constants handling
+  struct ast_node *pi_node;
+  struct ast_node *sqrt2_node;
+  struct ast_node *sqrt3_node;
 };
 
 // create an initial context

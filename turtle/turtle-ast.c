@@ -1,8 +1,6 @@
 #include "turtle-ast.h"
 #include "hashmap_procvar.h"
 
-#include <assert.h>
-#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -275,7 +273,7 @@ struct ast_node *make_cmd_color_rgb(struct ast_node* r,struct ast_node* g, struc
 
 
 // This is a constructor a print command node with an message to print on stderr
-struct ast_node *make_cmd_print(const char * msg) {
+struct ast_node *make_cmd_print(char * msg) {
   if (DEV) printf("make_cmd_print\n");
   struct ast_node *node = calloc(1,sizeof(struct ast_node));
   
@@ -431,15 +429,27 @@ void context_create(struct context *self) {
   self->variables = hashmap_procvar_create(10);
   self->procedures = hashmap_procvar_create(10);
 
-  hashmap_procvar_set(self->variables, "PI", make_expr_value(PI));
-  hashmap_procvar_set(self->variables, "SQRT2", make_expr_value(SQRT2));
-  hashmap_procvar_set(self->variables, "SQRT3", make_expr_value(SQRT3));
+    //Constants PI, SQRT2, SQRT3
+  self->consts = hashmap_procvar_create(4);
+  self->pi_node = make_expr_value(PI);
+  hashmap_procvar_set(self->consts, "PI", self->pi_node);
+
+  self->sqrt2_node = make_expr_value(SQRT2);
+  hashmap_procvar_set(self->consts, "SQRT2", self->sqrt2_node);
+
+  self->sqrt3_node = make_expr_value(SQRT3);
+  hashmap_procvar_set(self->consts, "SQRT3", self->sqrt3_node);
 }
 
 // This function destroys the context at the end of the program
 void context_destroy(struct context *self) {
+  free(self->pi_node);
+  free(self->sqrt2_node);
+  free(self->sqrt3_node);
+  
   hashmap_procvar_destroy(self->variables);
   hashmap_procvar_destroy(self->procedures);
+  hashmap_procvar_destroy(self->consts);
 }
 
 /*
@@ -460,9 +470,14 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
       struct ast_node *node = hashmap_procvar_get(ctx->variables, self->u.name);
       if (node) {
         return ast_node_eval(node, ctx);
+      }
+      node = hashmap_procvar_get(ctx->consts, self->u.name);
+      if (node) {
+        return ast_node_eval(node, ctx);
+      }
       fprintf(stderr, "Variable %s not found\n", self->u.name);
       return NAN;
-      }
+      
       break;
 
     

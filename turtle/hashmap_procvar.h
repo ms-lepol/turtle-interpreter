@@ -1,11 +1,11 @@
 #ifndef TURTLE_HASHMAP_PROCVAR_H
-#define TURTLE_AST_H
+#define TURTLE_HASHMAP_PROCVAR_H
 #include <malloc.h>
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "turtle-ast.h"
+
 
 // Hashmap for procedure & variables entry
 typedef struct pair {
