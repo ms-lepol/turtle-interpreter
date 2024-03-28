@@ -79,6 +79,7 @@ struct ast_node *make_expr_color_rbg(double r, double g, double b);
 struct ast_node *make_expr_binop(char op, struct ast_node *left, struct ast_node *right);
 struct ast_node *make_expr_neg(struct ast_node *expr);
 struct ast_node *make_expr_unop(char op, struct ast_node *expr);
+struct ast_node *make_expr_block(struct ast_node *expr);
 
 //Expr functions constructors
 struct ast_node *make_expr_func_cos(struct ast_node *expr);

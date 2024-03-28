@@ -105,13 +105,13 @@ expr:
   VALUE                                      { $$ = make_expr_value($1); }
   | COLOR                                    { $$ = make_expr_color($1); }
   | NAME                                     { $$ = make_expr_name($1); }
+  |  '(' expr ')'                            { $$ = $2; }
+  |  '-' expr                                { $$ = make_expr_neg($2); }
   |  expr '+' expr                           { $$ = make_expr_binop('+',$1, $3); }
   |  expr '-' expr                           { $$ = make_expr_binop('-',$1, $3); }
   |  expr '*' expr                           { $$ = make_expr_binop('*',$1, $3); }
   |  expr '/' expr                           { $$ = make_expr_binop('/',$1, $3); }
   |  expr '^' expr                           { $$ = make_expr_binop('^',$1, $3); }
-  |  '(' expr ')'                            { $$ = $2; }
-  |  '-' expr                                { $$ = make_expr_neg($2); }
   |  KW_FUNC_COS '(' expr ')'                { $$ = make_expr_func_cos($3); }
   |  KW_FUNC_SIN '(' expr ')'                { $$ = make_expr_func_sin($3); }
   |  KW_FUNC_TAN '(' expr ')'                { $$ = make_expr_func_tan($3); }

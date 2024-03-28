@@ -166,6 +166,17 @@ struct ast_node *make_expr_func_random (struct ast_node* expr,struct ast_node* e
   return node;
 }
 
+// This is a constructor for a block expression node
+struct ast_node *make_expr_block(struct ast_node* expr) {
+  if (DEV) printf("make_expr_block\n");
+  struct ast_node *node = calloc(1,sizeof(struct ast_node));
+  
+  node->kind = KIND_EXPR_BLOCK;
+  node->children_count = 1;
+  node->children[0] = expr;
+  return node;
+}
+
 /*
  * movements & rotations cmd constructors
  */
@@ -490,6 +501,11 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
       }
     break;
 
+    case KIND_EXPR_BLOCK:
+      if (DEV) printf("evaluating block\n");
+      return ast_node_eval(self->children[0], ctx);
+    break;
+
     case KIND_EXPR_COLOR:
       if (DEV) printf("evaluating color : %s\n", self->u.name);
       if (strcmp(self->u.name, "rgb") == 0) {
@@ -524,8 +540,13 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
         case FUNC_RANDOM:
           if (DEV) printf("evaluating random\n");
           return drand(ast_node_eval(self->children[0], ctx), ast_node_eval(self->children[1], ctx));
-      
-      }
+          break;
+        default:
+          printf("unknown function\n");
+          return NAN;
+          break;}
+      break;
+
     case KIND_CMD_SIMPLE:
       switch (self->u.cmd) {
         case CMD_FORWARD:
@@ -806,6 +827,11 @@ void ast_node_print(const struct ast_node *self){
           break;
       
       }
+    case KIND_EXPR_BLOCK:
+      printf("( ");
+      ast_node_print(self->children[0]);
+      printf(" )");
+      break;
     
     default:
       printf("unknown node kind\n");
