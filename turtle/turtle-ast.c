@@ -456,7 +456,7 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
         return data;
       }
       ctx->exit_code = 5;
-      fprintf(stderr, "Variable %s not found\n", self->u.name);
+      fprintf(stderr, "ERROR : Variable %s not found\n", self->u.name);
       exit(ctx->exit_code);
       return NAN;
       
@@ -480,16 +480,16 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
         case '/':
           if (y == 0) {
             ctx->exit_code = 1;
-            fprintf(stderr, "Division by zero\n");
+            fprintf(stderr, "ERROR : Division by zero\n");
             exit(ctx->exit_code);
           }
           return x / y;
           break;
         case '^':{
           double res = pow(x, y);
-          if (isnan(res)) {
+          if ((x == 0 && y == 0) || isnan(res)) {
             ctx->exit_code = 2;
-            fprintf(stderr, "Power arguments outside of definition range\n");
+            fprintf(stderr, "ERROR : Power arguments outside of definition range\n");
             exit(ctx->exit_code);
           }
           return res;
@@ -553,7 +553,7 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
           if (DEV) printf("evaluating sqrt\n");
           if (x < 0) {
             ctx->exit_code = 3;
-            fprintf(stderr, "Negative square root\n");
+            fprintf(stderr, "ERROR : Negative square root\n");
             exit(ctx->exit_code);
           }
           return sqrt(x);
@@ -563,7 +563,7 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
           double y = ast_node_eval(self->children[1], ctx);
           if (y < x) {
             ctx->exit_code = 4;
-            fprintf(stderr, "Invalid range for random\n");
+            fprintf(stderr, "ERROR : Invalid range for random\n");
             exit(ctx->exit_code);
           }
           return drand(x, y);
@@ -673,7 +673,7 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
         ast_node_eval(proc, ctx);
       } else {
         ctx->exit_code = 6;
-        fprintf(stderr, "Procedure %s not found\n", name);
+        fprintf(stderr, "ERROR : Procedure %s not found\n", name);
         exit(ctx->exit_code);
       }
       break;
@@ -681,7 +681,7 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
       if (DEV) printf("evaluating proc\n");
       if (hashmap_procvar_get_proc(ctx->procedures, self->children[0]->u.name)) {
         ctx->exit_code =  7;
-        fprintf(stderr, "Procedure %s already exists\n", self->children[0]->u.name);
+        fprintf(stderr, "ERROR : Procedure %s already exists\n", self->children[0]->u.name);
         exit(ctx->exit_code);
       }
       hashmap_procvar_set_proc(ctx->procedures, self->children[0]->u.name, self->children[1]);
