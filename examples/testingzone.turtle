@@ -1,3 +1,23 @@
-fw 100 
-left 90
-bw 100
+# Creating var and proc for error testing
+
+set ERRPOW 0^0
+set DIV0 1/0
+
+proc PROC {
+    down 
+    fw 100
+    up
+}
+
+# Try to draw
+
+down 
+
+# Uncomment for error testing
+
+#fw DIV0
+fw ERRPOW
+#proc PROC {}
+#fw sqrt(-1)
+#fw random(100, 0)
+#fw UNDEFINEDVAR

@@ -505,14 +505,16 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
           }
           return x / y;
           break;
-        case '^':
-          if (x <= 0 || y <= 0) {
+        case '^':{
+          double res = pow(x, y);
+          if (isnan(res)) {
             ctx->exit_code = 2;
             fprintf(stderr, "Power arguments outside of definition range\n");
             exit(ctx->exit_code);
           }
-          return pow(x, y);
+          return res;
           break;
+        }
         default:
           printf("unknown operator\n");
           return NAN;
@@ -552,9 +554,9 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
       }
       return NAN;
       break;
-    case KIND_EXPR_FUNC:
+    case KIND_EXPR_FUNC:{
+      double x = ast_node_eval(self->children[0], ctx);
       switch (self->u.func) {
-        double x = ast_node_eval(self->children[0], ctx);
         case FUNC_SIN:
           if (DEV) printf("evaluating sin\n");
           return sin(x);
@@ -578,7 +580,7 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
           break;
         case FUNC_RANDOM:
           if (DEV) printf("evaluating random\n");
-          double y = ast_node_eval(self->children[0], ctx);
+          double y = ast_node_eval(self->children[1], ctx);
           if (y < x) {
             ctx->exit_code = 4;
             fprintf(stderr, "Invalid range for random\n");
@@ -591,7 +593,7 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
           return NAN;
           break;}
       break;
-
+    }
     case KIND_CMD_SIMPLE:
       switch (self->u.cmd) {
         case CMD_FORWARD:
@@ -961,5 +963,5 @@ double get_color_b(char *color){
 // Function to generate random numbers between low and high - from https://stackoverflow.com/questions/55766058/how-can-i-generate-random-doubles-in-c
 double drand ( double low, double high ){
     srand((unsigned int)clock());
-     return ( (double)rand() * ( high - low ) ) / (double)RAND_MAX + low;
+    return ( (double)rand() * ( high - low ) ) / (double)RAND_MAX + low;
 }
