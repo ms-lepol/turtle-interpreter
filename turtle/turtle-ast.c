@@ -455,7 +455,9 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
       if (!isnan(data)) {
         return data;
       }
+      ctx->exit_code = 5;
       fprintf(stderr, "Variable %s not found\n", self->u.name);
+      exit(ctx->exit_code);
       return NAN;
       
       break;
@@ -463,21 +465,33 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
     
     case KIND_EXPR_BINOP:
       if (DEV) printf("evaluating binop : %c\n", self->u.op);
+      double x = ast_node_eval(self->children[0], ctx);
+      double y = ast_node_eval(self->children[1], ctx);
       switch (self ->u.op) {
         case '+':
-          return ast_node_eval(self->children[0], ctx) + ast_node_eval(self->children[1], ctx);
+          return x + y;
           break;
         case '-':
-          return ast_node_eval(self->children[0], ctx) - ast_node_eval(self->children[1], ctx);
+          return x - y;
           break;
         case '*':
-          return ast_node_eval(self->children[0], ctx) * ast_node_eval(self->children[1], ctx);
+          return x * y;
           break;
         case '/':
-          return ast_node_eval(self->children[0], ctx) / ast_node_eval(self->children[1], ctx);
+          if (y == 0) {
+            ctx->exit_code = 1;
+            fprintf(stderr, "Division by zero\n");
+            exit(ctx->exit_code);
+          }
+          return x / y;
           break;
         case '^':
-          return pow(ast_node_eval(self->children[0], ctx), ast_node_eval(self->children[1], ctx));
+          if (x <= 0 || y <= 0) {
+            ctx->exit_code = 2;
+            fprintf(stderr, "Power arguments outside of definition range\n");
+            exit(ctx->exit_code);
+          }
+          return pow(x, y);
           break;
         default:
           printf("unknown operator\n");
@@ -520,25 +534,37 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
       break;
     case KIND_EXPR_FUNC:
       switch (self->u.func) {
+        double x = ast_node_eval(self->children[0], ctx);
         case FUNC_SIN:
           if (DEV) printf("evaluating sin\n");
-          return sin(ast_node_eval(self->children[0], ctx));
+          return sin(x);
           break;
         case FUNC_COS:
           if (DEV) printf("evaluating cos\n");
-          return cos(ast_node_eval(self->children[0], ctx));
+          return cos(x);
           break;
         case FUNC_TAN:
           if (DEV) printf("evaluating tan\n");
-          return tan(ast_node_eval(self->children[0], ctx));
+          return tan(x);
           break;
         case FUNC_SQRT:
           if (DEV) printf("evaluating sqrt\n");
-          return sqrt(ast_node_eval(self->children[0], ctx));
+          if (x < 0) {
+            ctx->exit_code = 3;
+            fprintf(stderr, "Negative square root\n");
+            exit(ctx->exit_code);
+          }
+          return sqrt(x);
           break;
         case FUNC_RANDOM:
           if (DEV) printf("evaluating random\n");
-          return drand(ast_node_eval(self->children[0], ctx), ast_node_eval(self->children[1], ctx));
+          double y = ast_node_eval(self->children[0], ctx);
+          if (y < x) {
+            ctx->exit_code = 4;
+            fprintf(stderr, "Invalid range for random\n");
+            exit(ctx->exit_code);
+          }
+          return drand(x, y);
           break;
         default:
           printf("unknown function\n");
@@ -644,11 +670,18 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
         // We evaluate the procedure
         ast_node_eval(proc, ctx);
       } else {
+        ctx->exit_code = 6;
         fprintf(stderr, "Procedure %s not found\n", name);
+        exit(ctx->exit_code);
       }
       break;
     case KIND_CMD_PROC:
       if (DEV) printf("evaluating proc\n");
+      if (hashmap_procvar_get_proc(ctx->procedures, self->children[0]->u.name)) {
+        ctx->exit_code =  7;
+        fprintf(stderr, "Procedure %s already exists\n", self->children[0]->u.name);
+        exit(ctx->exit_code);
+      }
       hashmap_procvar_set_proc(ctx->procedures, self->children[0]->u.name, self->children[1]);
       break;
     case KIND_CMD_REPEAT:
