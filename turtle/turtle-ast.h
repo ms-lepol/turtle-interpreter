@@ -93,7 +93,8 @@ struct ast_node *make_cmd_backward(struct ast_node *expr);
 struct ast_node *make_cmd_heading(struct ast_node *expr);
 struct ast_node *make_cmd_up();
 struct ast_node *make_cmd_down();
-struct ast_node *make_cmd_print(char * msg);
+struct ast_node *make_cmd_print(struct ast_node * msg);
+
 struct ast_node *make_cmd_home();
 struct ast_node *make_cmd_position(struct ast_node* expr_x, struct ast_node* expr_y);
 struct ast_node *make_cmd_right(struct ast_node *expr);
@@ -151,11 +152,6 @@ struct context {
   hashmap_procvar_t *variables;
   //const handling
   hashmap_procvar_t *consts;
-
-  //Constants handling
-  struct ast_node *pi_node;
-  struct ast_node *sqrt2_node;
-  struct ast_node *sqrt3_node;
 };
 
 // create an initial context

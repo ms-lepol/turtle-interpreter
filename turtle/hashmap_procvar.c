@@ -1,4 +1,6 @@
 #include "hashmap_procvar.h"
+#include <math.h>
+#include <stdlib.h>
 
 //Create a new hashmap
 hashmap_procvar_t *hashmap_procvar_create(size_t capacity) {
@@ -24,7 +26,7 @@ unsigned long hashmap_procvar_hash(const char *key) {
 }
 
 //Get the value of a key in the hashmap
-struct ast_node* hashmap_procvar_get(hashmap_procvar_t *hashmap, const char *key) {
+struct ast_node* hashmap_procvar_get_proc(hashmap_procvar_t *hashmap, const char *key) {
     //Calculate the hash of the key
     unsigned long hash = hashmap_procvar_hash(key) % hashmap->capacity;
     //Iterate over the linked list in the bucket
@@ -32,7 +34,7 @@ struct ast_node* hashmap_procvar_get(hashmap_procvar_t *hashmap, const char *key
     while (entry) {
         //If the key is found, return the value
         if (strcmp(entry->key, key) == 0) {
-            return entry->node;
+            return entry->data.ast_node;
         }
         entry = entry->next;
     }
@@ -40,8 +42,24 @@ struct ast_node* hashmap_procvar_get(hashmap_procvar_t *hashmap, const char *key
     return NULL;
 }
 
+double hashmap_procvar_get_var(const hashmap_procvar_t *hashmap, const char *key) {
+    //Calculate the hash of the key
+    unsigned long hash = hashmap_procvar_hash(key) % hashmap->capacity;
+    //Iterate over the linked list in the bucket
+    hashmap_procvar_entry_t *entry = hashmap->buckets[hash];
+    while (entry) {
+        //If the key is found, return the value
+        if (strcmp(entry->key, key) == 0) {
+            return entry->data.d;
+        }
+        entry = entry->next;
+    }
+    //If the key is not found, return 0
+    return NAN;
+}
+
 //Set the value of a key in the hashmap
-void hashmap_procvar_set(hashmap_procvar_t *hashmap, const char *key, struct ast_node *node) {
+void hashmap_procvar_set_proc(hashmap_procvar_t *hashmap, const char *key, struct ast_node *node) {
     //Calculate the hash of the key
     unsigned long hash = hashmap_procvar_hash(key) % hashmap->capacity;
     //Iterate over the linked list in the bucket
@@ -49,7 +67,7 @@ void hashmap_procvar_set(hashmap_procvar_t *hashmap, const char *key, struct ast
     while (entry) {
         //If the key is found, update the value
         if (strcmp(entry->key, key) == 0) {
-            entry->node = node;
+            entry->data.ast_node = node;
             return;
         }
         entry = entry->next;
@@ -58,7 +76,34 @@ void hashmap_procvar_set(hashmap_procvar_t *hashmap, const char *key, struct ast
     //Create a new entry
     entry = malloc(sizeof(hashmap_procvar_entry_t));
     entry->key = strdup(key);
-    entry->node = node;
+    entry->data.ast_node = node;
+    entry->next = hashmap->buckets[hash];
+    hashmap->buckets[hash] = entry;
+    hashmap->len++;
+    //Grow the hashmap if it is full
+    if (hashmap->len == hashmap->capacity) {
+        hashmap_procvar_grow(hashmap);
+    }
+}
+
+void hashmap_procvar_set_var(hashmap_procvar_t *hashmap, const char *key, double number) {
+    //Calculate the hash of the key
+    unsigned long hash = hashmap_procvar_hash(key) % hashmap->capacity;
+    //Iterate over the linked list in the bucket
+    hashmap_procvar_entry_t *entry = hashmap->buckets[hash];
+    while (entry) {
+        //If the key is found, update the value
+        if (strcmp(entry->key, key) == 0) {
+            entry->data.d = number;
+            return;
+        }
+        entry = entry->next;
+    }
+    //If the key is not found, add it to the hashmap
+    //Create a new entry
+    entry = malloc(sizeof(hashmap_procvar_entry_t));
+    entry->key = strdup(key);
+    entry->data.d = number;
     entry->next = hashmap->buckets[hash];
     hashmap->buckets[hash] = entry;
     hashmap->len++;
@@ -86,7 +131,6 @@ void hashmap_procvar_destroy(hashmap_procvar_t *hashmap) {
     free(hashmap);
 }
 
-//Grow the hashmap
 void hashmap_procvar_grow(hashmap_procvar_t *hashmap) {
     //Create a new hashmap with double the capacity
     hashmap_procvar_t *new_hashmap = hashmap_procvar_create(hashmap->capacity * 2);
@@ -94,8 +138,13 @@ void hashmap_procvar_grow(hashmap_procvar_t *hashmap) {
         //Iterate over the linked list in the bucket
         hashmap_procvar_entry_t *entry = hashmap->buckets[i];
         while (entry) {
-            //Add the entry to the new hashmap and free the old entry
-            hashmap_procvar_set(new_hashmap, entry->key, entry->node);
+            if (entry->data.ast_node) {
+                //Add the entry to the new hashmap and free the old entry
+                hashmap_procvar_set_proc(new_hashmap, entry->key, entry->data.ast_node);
+            }
+            else {
+                hashmap_procvar_set_var(new_hashmap, entry->key, entry->data.d);
+            }
             hashmap_procvar_entry_t *next = entry->next;
             free(entry->key);
             free(entry);

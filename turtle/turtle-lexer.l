@@ -46,7 +46,7 @@ KW_CONST_SQRT3 SQRT3
 COLORS red|green|blue|cyan|magenta|yellow|black|grey|white
 COMMENT \#.*$
 VAR_NAME [A-Z][A-Z0-9]*
-PRINT_MSG [A-Za-z0-9]*
+
 
 %%
 
@@ -90,8 +90,6 @@ PRINT_MSG [A-Za-z0-9]*
 "{"                            { return '{'; }
 "}"                            { return '}'; }
 
-
-{PRINT_MSG}                    { yylval.name = strdup(yytext); return PRINT_MSG; }
 {COMMENT}                      /* ignore comments */
 
 
