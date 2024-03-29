@@ -1,3 +1,4 @@
-fw 100 
-left 90
-bw 100
+set MABIT 100
+set MABIT 200
+set MABIT (MABIT+MABIT)
+fw MABIT

@@ -273,7 +273,7 @@ struct ast_node *make_cmd_color_rgb(struct ast_node* r,struct ast_node* g, struc
 
 
 // This is a constructor a print command node with an message to print on stderr
-struct ast_node *make_cmd_print(char * msg) {
+struct ast_node *make_cmd_print(struct ast_node *msg) {
   if (DEV) printf("make_cmd_print\n");
   struct ast_node *node = calloc(1,sizeof(struct ast_node));
   
@@ -281,21 +281,10 @@ struct ast_node *make_cmd_print(char * msg) {
   node->u.cmd = CMD_PRINT;
   
   node->children_count = 1;
-  node->children[0] = make_expr_name(msg);
+  node->children[0] = msg;
   return node;
 }
 
-//this is a constructor for a print command node with an expression as a child
-struct ast_node *make_cmd_print_expr(struct ast_node* expr) {
-  if (DEV) printf("make_cmd_print_expr\n");
-  struct ast_node *node = calloc(1,sizeof(struct ast_node));
-  
-  node->kind = KIND_CMD_SIMPLE;
-  node->u.cmd = CMD_PRINT;
-  node->children_count = 1;
-  node->children[0] = expr;
-  return node;
-}
 
 // This is a constructor a home command node
 struct ast_node *make_cmd_home() {
@@ -428,25 +417,16 @@ void context_create(struct context *self) {
 
   self->variables = hashmap_procvar_create(10);
   self->procedures = hashmap_procvar_create(10);
+  self->consts = hashmap_procvar_create(10);
 
     //Constants PI, SQRT2, SQRT3
-  self->consts = hashmap_procvar_create(4);
-  self->pi_node = make_expr_value(PI);
-  hashmap_procvar_set(self->consts, "PI", self->pi_node);
-
-  self->sqrt2_node = make_expr_value(SQRT2);
-  hashmap_procvar_set(self->consts, "SQRT2", self->sqrt2_node);
-
-  self->sqrt3_node = make_expr_value(SQRT3);
-  hashmap_procvar_set(self->consts, "SQRT3", self->sqrt3_node);
+  hashmap_procvar_set_var(self->consts, "PI", PI);
+  hashmap_procvar_set_var(self->consts, "SQRT2",SQRT2);
+  hashmap_procvar_set_var(self->consts, "SQRT3", SQRT3);
 }
 
 // This function destroys the context at the end of the program
 void context_destroy(struct context *self) {
-  free(self->pi_node);
-  free(self->sqrt2_node);
-  free(self->sqrt3_node);
-  
   hashmap_procvar_destroy(self->variables);
   hashmap_procvar_destroy(self->procedures);
   hashmap_procvar_destroy(self->consts);
@@ -467,13 +447,13 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
     // If the node is a variable, we return the value of the variable
     case KIND_EXPR_NAME:
       if (DEV) printf("evaluating variable : %s\n", self->u.name);
-      struct ast_node *node = hashmap_procvar_get(ctx->variables, self->u.name);
-      if (node) {
-        return ast_node_eval(node, ctx);
+      double data = hashmap_procvar_get_var(ctx->variables, self->u.name);
+      if (!isnan(data)) {
+        return data;
       }
-      node = hashmap_procvar_get(ctx->consts, self->u.name);
-      if (node) {
-        return ast_node_eval(node, ctx);
+      data = hashmap_procvar_get_var(ctx->consts, self->u.name);
+      if (!isnan(data)) {
+        return data;
       }
       fprintf(stderr, "Variable %s not found\n", self->u.name);
       return NAN;
@@ -592,7 +572,8 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
           break;
         case CMD_PRINT:
           if (DEV) printf("evaluating print\n");
-            fprintf(stderr, "%s", self->children[0]->u.name);
+            double res = ast_node_eval(self->children[0], ctx);
+            fprintf(stderr, "%f\n", res);
           break;
         case CMD_POSITION:
           if (DEV) printf("evaluating position\n");
@@ -657,7 +638,7 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
     case KIND_CMD_CALL:
       if (DEV) printf("evaluating call\n");
       char *name = self->children[0]->u.name;
-      struct ast_node *proc = hashmap_procvar_get(ctx->procedures, name);
+      struct ast_node *proc = hashmap_procvar_get_proc(ctx->procedures, name);
       
       if (proc) {
         // We evaluate the procedure
@@ -668,7 +649,7 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
       break;
     case KIND_CMD_PROC:
       if (DEV) printf("evaluating proc\n");
-      hashmap_procvar_set(ctx->procedures, self->children[0]->u.name, self->children[1]);
+      hashmap_procvar_set_proc(ctx->procedures, self->children[0]->u.name, self->children[1]);
       break;
     case KIND_CMD_REPEAT:
       if (DEV) printf("evaluating repeat\n");
@@ -684,7 +665,9 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
       break;
     case KIND_CMD_SET:
       if (DEV) printf("evaluating set\n");
-      hashmap_procvar_set(ctx->variables, self->children[0]->u.name, self->children[1]);
+      double res = ast_node_eval(self->children[1], ctx);
+     
+      hashmap_procvar_set_var(ctx->variables, self->children[0]->u.name, res);
       break;
     default:
       printf("unknown node kind\n");

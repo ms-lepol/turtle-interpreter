@@ -96,8 +96,8 @@ cmd:
   |  KW_SET NAME expr                        { $$ = make_cmd_set($2, $3); }
   |  KW_CALL NAME                            { $$ = make_cmd_call($2); }
   |  '{' cmds '}'                            { $$ = make_cmd_block($2); }
-  |  KW_CMD_PRINT PRINT_MSG                  { $$ = make_cmd_print($2); }
-  |  KW_CMD_PRINT expr                       { $$ = make_cmd_print_expr($2); }
+  |  KW_CMD_PRINT expr                       { $$ = make_cmd_print($2); }
+
 
 ;
 
