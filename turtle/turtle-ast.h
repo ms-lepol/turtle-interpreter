@@ -133,6 +133,18 @@ struct context {
   double angle;
   bool up;
 
+  // Error handling
+  unsigned exit_code;
+  /* Exit codes
+    1 : Division by 0
+    2 : Power arguments outside of definition range 
+    3 : Negative square root
+    4 : Invalid range for random
+    5 : Use of undefined variable
+    6 : Use of undefined procedure
+    7 : Redefinition of already existing procedure
+  */
+
   //procedure handling
   hashmap_procvar_t *procedures;
   //variable handling

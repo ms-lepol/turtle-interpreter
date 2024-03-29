@@ -475,6 +475,7 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
       if (node) {
         return ast_node_eval(node, ctx);
       }
+      ctx->exit_code = 5;
       fprintf(stderr, "Variable %s not found\n", self->u.name);
       return NAN;
       
@@ -497,13 +498,13 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
           break;
         case '/':
           if (y == 0) {
-            // Err
+            ctx->exit_code = 1;
           }
           return x / y;
           break;
         case '^':
           if (x <= 0 || y <= 0) {
-            // Err
+            ctx->exit_code = 2;
           }
           return pow(x, y);
           break;
@@ -564,7 +565,7 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
         case FUNC_SQRT:
           if (DEV) printf("evaluating sqrt\n");
           if (x < 0) {
-            // Err
+            ctx->exit_code = 3;
           }
           return sqrt(x);
           break;
@@ -572,7 +573,7 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
           if (DEV) printf("evaluating random\n");
           double y = ast_node_eval(self->children[0], ctx);
           if (y < x) {
-            // Err
+            ctx->exit_code = 4;
           }
           return drand(x, y);
           break;
@@ -679,11 +680,17 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
         // We evaluate the procedure
         ast_node_eval(proc, ctx);
       } else {
+        ctx->exit_code = 6;
         fprintf(stderr, "Procedure %s not found\n", name);
       }
       break;
     case KIND_CMD_PROC:
       if (DEV) printf("evaluating proc\n");
+      if (hashmap_procvar_get(ctx->procedures, self->children[0]->u.name)) {
+        ctx->exit_code =  7;
+        fprintf(stderr, "Procedure %s already exists\n", self->children[0]->u.name);
+        return NAN;
+      }
       hashmap_procvar_set(ctx->procedures, self->children[0]->u.name, self->children[1]);
       break;
     case KIND_CMD_REPEAT:
