@@ -1,0 +1,18 @@
+# Creating proc for error test
+
+proc PROC {
+    down 
+    fw 100
+    up
+}
+
+# Uncomment for error testing
+
+set ERRPOW 0^0
+#set ERRDIV0 1/0
+#set ERRSQRTNEG sqrt(-1)
+#set ERRRANDOM random(100, 0)
+
+#proc PROC {}
+
+#fw UNDEFINEDVAR
