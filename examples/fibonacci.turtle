@@ -1,0 +1,14 @@
+proc FIBONACCI { # print the FIBONACCINB first terms of the fibonacci sequance
+    set FIBONACCIA 0
+    set FIBONACCIB 1
+    repeat FIBONACCINB {
+        print FIBONACCIA
+        set FIBONACCIC FIBONACCIA + FIBONACCIB
+        set FIBONACCIA FIBONACCIB
+        set FIBONACCIB FIBONACCIC
+    }
+}
+
+set FIBONACCINB 100
+call FIBONACCI
+

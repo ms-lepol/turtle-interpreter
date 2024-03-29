@@ -414,6 +414,8 @@ void context_create(struct context *self) {
   self->y = 0;
   self->angle = 0;
   self->up = 0;
+  self->exit_code = 0;
+  self->in_proc = 0;
 
   self->variables = hashmap_procvar_create(10);
   self->procedures = hashmap_procvar_create(10);
@@ -669,8 +671,10 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
       struct ast_node *proc = hashmap_procvar_get_proc(ctx->procedures, name);
       
       if (proc) {
+        ctx->in_proc = 1;
         // We evaluate the procedure
         ast_node_eval(proc, ctx);
+        ctx->in_proc = 0;
       } else {
         ctx->exit_code = 6;
         fprintf(stderr, "Procedure %s not found\n", name);
@@ -682,6 +686,11 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
       if (hashmap_procvar_get_proc(ctx->procedures, self->children[0]->u.name)) {
         ctx->exit_code =  7;
         fprintf(stderr, "Procedure %s already exists\n", self->children[0]->u.name);
+        exit(ctx->exit_code);
+      }
+      if (ctx->in_proc) {
+        ctx->exit_code = 8;
+        fprintf(stderr, "Procedure %s cannot be defined inside another procedure\n", self->children[0]->u.name);
         exit(ctx->exit_code);
       }
       hashmap_procvar_set_proc(ctx->procedures, self->children[0]->u.name, self->children[1]);
@@ -701,6 +710,27 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
     case KIND_CMD_SET:
       if (DEV) printf("evaluating set\n");
       double res = ast_node_eval(self->children[1], ctx);
+      if (isnan(res)) {
+        ctx->exit_code = 9;
+        fprintf(stderr, "Invalid value for variable %s\n", self->children[0]->u.name);
+        exit(ctx->exit_code);
+      }
+      if (hashmap_procvar_get_proc(ctx->consts, self->children[0]->u.name)) {
+        ctx->exit_code = 10;
+        fprintf(stderr, "Variable %s already exists as a constant\n", self->children[0]->u.name);
+        exit(ctx->exit_code);
+      }
+      if (res==PI || res==SQRT2 || res==SQRT3){
+        ctx->exit_code = 11;
+        fprintf(stderr, "Variable %s is a constant\n", self->children[0]->u.name);
+        exit(ctx->exit_code);
+      }
+      if (res == INFINITY || res == -INFINITY) {
+        ctx->exit_code = 12;
+        fprintf(stderr, "Variable %s is infinite\n", self->children[0]->u.name);
+        exit(ctx->exit_code);
+      }
+      
      
       hashmap_procvar_set_var(ctx->variables, self->children[0]->u.name, res);
       break;

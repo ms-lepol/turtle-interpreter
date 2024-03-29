@@ -144,10 +144,16 @@ struct context {
     5 : Use of undefined variable
     6 : Use of undefined procedure
     7 : Redefinition of already existing procedure
+    8 : Definition of of a procedure in a procedure
+    9 : Invalid value for a variable
+    10 : Definition of a variable with a const name
+    11 : Use of a const as a variable
+    12 : Variable is infinite
   */
 
   //procedure handling
   hashmap_procvar_t *procedures;
+  bool in_proc;
   //variable handling
   hashmap_procvar_t *variables;
   //const handling
