@@ -24,7 +24,6 @@ set RECURSE 0               # Count variable for debug,
 proc KOCH {
     repeat DEV {
         set RECURSE RECURSE + 1
-        print RECURSE
     }
     repeat TRUEORDER {
         fw SIZE
@@ -71,3 +70,6 @@ proc INIT {
 
 ## Main
 call SNOWFLAKE
+repeat DEV {
+    print RECURSE
+}
