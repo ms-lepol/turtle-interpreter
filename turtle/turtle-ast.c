@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <time.h>
 
 #define PI 3.141592653589793
 #define SQRT2 1.41421356237309504880
@@ -624,7 +623,7 @@ double ast_node_eval(const struct ast_node *self, struct context *ctx) {
           ctx->x = 0;
           ctx->y = 0;
           ctx->angle = 0;
-          ctx->up = true;
+          ctx->up = false;
           printf("Color 0.0 0.0 0.0\n");
           printf("MoveTo 0.0 0.0\n");
           break;
@@ -975,6 +974,6 @@ double get_color_b(char *color){
 
 // Function to generate random numbers between low and high - from https://stackoverflow.com/questions/55766058/how-can-i-generate-random-doubles-in-c
 double drand ( double low, double high ){
-    srand((unsigned int)clock());
+    
     return ( (double)rand() * ( high - low ) ) / (double)RAND_MAX + low;
 }

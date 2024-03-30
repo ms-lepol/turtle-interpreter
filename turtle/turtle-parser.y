@@ -23,7 +23,7 @@ void yyerror(struct ast *ret, const char *);
 
 %left '+' '-'
 %left '*' '/'
-%left '^'
+%right '^'
 
 %token <value>    VALUE       "value"
 %token <name>     NAME        "name"

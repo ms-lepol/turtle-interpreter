@@ -1,14 +1,95 @@
-proc FIBONACCI { # print the FIBONACCINB first terms of the fibonacci sequance
+set WIDTH 4
+set GOLDNUMBER 1.618
+set COUPEDECALE 0
+set GOLDNUMBERWIDTH 250
+set GOLDNUMBERLENGTH GOLDNUMBER*GOLDNUMBERWIDTH
+
+proc QUARTER {
+    repeat 90 {
+    fw GOLDSQUARE
+    down
+    fw WIDTH
+    up
+    bw GOLDSQUARE + WIDTH
+    left 1
+    }
+}
+
+proc FIBONACCI { # print the FIBONACCINB first terms of the fibonacci sequence
     set FIBONACCIA 0
     set FIBONACCIB 1
     repeat FIBONACCINB {
-        print FIBONACCIA
+        call QUARTER
+        position 0.0 , 0.0
         set FIBONACCIC FIBONACCIA + FIBONACCIB
+        set COUPEDECALE FIBONACCIA
         set FIBONACCIA FIBONACCIB
         set FIBONACCIB FIBONACCIC
     }
 }
 
-set FIBONACCINB 100
-call FIBONACCI
+proc GOLDNUMBERRECT {
+    up
+    position -GOLDNUMBERLENGTH/2 , -GOLDNUMBERWIDTH/2
+    down
+    heading 0
+    down
+    color random(0.0,1.0), random(0.0,1.0), random(0.0,1.0)
+    up
+    repeat 2 {
+            right 90
+            fw GOLDNUMBERLENGTH
+            right 90
+            fw GOLDNUMBERWIDTH
+    }
+    down
+    heading 0
+    repeat 10 {
+        color random(0.0,1.0), random(0.0,1.0), random(0.0,1.0)
+        set GOLDSQUARE GOLDNUMBERWIDTH
+        repeat 5 {
+            fw GOLDSQUARE
+            right 90
+           
+        }
+        fw GOLDSQUARE
+        set NEWW GOLDNUMBERLENGTH-GOLDNUMBERWIDTH
+        set GOLDNUMBERLENGTH GOLDNUMBERWIDTH
+        set GOLDNUMBERWIDTH NEWW
+        
+    }
+    #Reset
+    left 90 
+    bw GOLDSQUARE
+
+    #Other Way
+    repeat 10 {
+        color random(0.0,1.0), random(0.0,1.0), random(0.0,1.0)
+        set GOLDSQUARE GOLDNUMBERWIDTH
+        set COUNTER 0
+        repeat 5 {
+            set COUNTER COUNTER + 1
+            repeat COUNTER - 2 {
+                print COUNTER
+                set COUNTER 0
+                
+            }
+            fw GOLDSQUARE
+            right 90
+           
+        }
+        fw GOLDSQUARE
+        set NEWW GOLDNUMBERLENGTH+GOLDNUMBERWIDTH
+        set GOLDNUMBERLENGTH GOLDNUMBERWIDTH
+        set GOLDNUMBERWIDTH NEWW
+        
+    }
+
+
+    
+}
+
+set FIBONACCINB 10
+color red
+call GOLDNUMBERRECT
 

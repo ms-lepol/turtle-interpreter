@@ -151,12 +151,12 @@ struct context {
     12 : Variable is infinite
   */
 
-  //procedure handling
+  //procedure handling - hashmap for procedures
   hashmap_procvar_t *procedures;
-  bool in_proc;
-  //variable handling
-  hashmap_procvar_t *variables;
-  //const handling
+  bool in_proc; // flag to know if we are in a procedure definition
+  //variable handling - hashmap for variables
+  hashmap_procvar_t *variables; 
+  //const handling - hashmap for constants
   hashmap_procvar_t *consts;
 };
 
