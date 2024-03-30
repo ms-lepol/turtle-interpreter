@@ -7,12 +7,17 @@ set HOWDEEP 3               # "deepness" of the fractals
 set SEGMENT OGSEGMENT
 set NBSEGMENTS 1
 set NBSEGMENTMINUSONE 1
-set NBSEGMOD4 0
+set MOD4 -8
 set STAY 1
 set L60 0
 set L60B 0
-set RIGHT120 0
+set R120 0
 set VOID 0
+set STAY2 0
+set L602 1
+set L60B2 0
+set R1202 0
+set VOID2 0
 
 # Makes a segment
 proc INIT {
@@ -50,13 +55,13 @@ proc KOCH {
 
 # Next state for the angle of the next koch iteration
 proc NEXT {
-    repeat RIGHT120 {
-        set RIGHT120 0
+    repeat R120 {
+        set R120 0
         set VOID 1
     }
     repeat L60 {
         set L60 0
-        set RIGHT120 1
+        set R120 1
     }
     repeat STAY {
         set STAY 0
@@ -70,10 +75,29 @@ proc NEXT {
         set VOID 0
         set L60B 1
     }
-    #print STAY
-    #print L60
-    #print RIGHT120
-    #print L60B
+}
+
+proc NEXT2 {
+    repeat R1202 {
+        set R1202 0
+        set VOID2 1
+    }
+    repeat L602 {
+        set L602 0
+        set R1202 1
+    }
+    repeat STAY2 {
+        set STAY2 0
+        set L602 1
+    }
+    repeat L60B2 {
+        set L60B2 0
+        set STAY2 1
+    }
+    repeat VOID2 {
+        set VOID2 0
+        set L60B2 1
+    }
 }
 
 # modulus
@@ -96,15 +120,18 @@ proc FRACTAL {
     repeat NBSEGMENTS {
         call KOCH
         repeat L60 {left 60}
-        repeat RIGHT120 {right 120}
+        repeat R120 {right 120}
         repeat L60B {left 60}
+        set MOD4 MOD4 + 1
+        repeat MOD4{
+            set MOD4 -3
+            repeat L602 {left 60}
+            repeat R1202 {right 120}
+            repeat L60B2 {left 60}
+            call NEXT2
+        }
         call NEXT
     }
-    #set STAY 0
-    #set L60 1
-    #set L60B 0
-    #set RIGHT120 0
-    #set VOID 0
     bw SEGMENT*3*NBSEGMENTMINUSONE
     set NBSEGMENTS NBSEGMENTS*4
     set NBSEGMENTMINUSONE NBSEGMENTMINUSONE*3
@@ -116,14 +143,15 @@ proc RESET {
     set STAY 1
     set L60 0
     set L60B 0
-    set RIGHT120 0
+    set R120 0
     set VOID 0
     set SEGMENT OGSEGMENT
+    set MOD4 -8
 }
 
 # Main
 up
-position -SEGMENT/2, -250
+position -SEGMENT/2, -100
 left 30
 down
 repeat 3 {
