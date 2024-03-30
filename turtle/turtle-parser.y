@@ -24,6 +24,7 @@ void yyerror(struct ast *ret, const char *);
 %left '+' '-'
 %left '*' '/'
 %right '^'
+%left UNARY_MINUS
 
 %token <value>    VALUE       "value"
 %token <name>     NAME        "name"
@@ -105,8 +106,8 @@ expr:
   VALUE                                      { $$ = make_expr_value($1); }
   | COLOR                                    { $$ = make_expr_color($1); }
   | NAME                                     { $$ = make_expr_name($1); }
+  |  '-' expr %prec UNARY_MINUS              { $$ = make_expr_neg($2); }
   |  '(' expr ')'                            { $$ = $2; }
-  |  '-' expr                                { $$ = make_expr_neg($2); }
   |  expr '+' expr                           { $$ = make_expr_binop('+',$1, $3); }
   |  expr '-' expr                           { $$ = make_expr_binop('-',$1, $3); }
   |  expr '*' expr                           { $$ = make_expr_binop('*',$1, $3); }

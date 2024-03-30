@@ -8,9 +8,9 @@
 # Customizable variables
 set SIZE 800            # The size of the main segment. 
                         # !! Setting higher than 800 may step out of screen
-set ORDER 5         # How many times Koch iteration will be applied on a segment
+set ORDER 3      # How many times Koch iteration will be applied on a segment
                         # !! Setting higher than 6 may take too much time and/or memory
-set DEV 0               # Variable to print debug messages  
+set DEV 0           # Variable to print debug messages  
 
 # Do not touch these variables
 set TRUEORDER - ORDER + 1   # Used to stop the recursion
@@ -22,6 +22,7 @@ set RECURSE 0               # Count variable for debug,
 
 # recursive KOCH function for a segment 
 proc KOCH {
+    color random(0.0,1.0), random(0.0,1.0), random(0.0,1.0)
     repeat DEV {
         set RECURSE RECURSE + 1
         print RECURSE

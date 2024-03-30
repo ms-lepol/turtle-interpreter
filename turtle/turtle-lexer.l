@@ -9,7 +9,7 @@
 
 %option warn 8bit nodefault noyywrap
 
-NUMBER (?:-?(?:0\.|[1-9]+[0-9]*\.?)[0-9]*(?:[eE][+-]?[1-9]+[0-9]*)?|0)
+NUMBER (?:(?:0\.|[1-9]+[0-9]*\.?)[0-9]*(?:[eE][+-]?[1-9]+[0-9]*)?|0)
 
 OP_MIN  \-
 OP_ADD \+
@@ -50,8 +50,7 @@ VAR_NAME [A-Z][A-Z0-9]*
 
 %%
 
-{NUMBER}                       { yylval.value = strtod(yytext, NULL); return VALUE; }
-{VAR_NAME}                     { yylval.name = strdup(yytext); return NAME; }
+
 
 {KW_CMD_COLOR}                 { return KW_CMD_COLOR; }
 {COLORS}                       { yylval.name = strdup(yytext) ; return COLOR; }
@@ -91,7 +90,8 @@ VAR_NAME [A-Z][A-Z0-9]*
 "}"                            { return '}'; }
 
 {COMMENT}                      /* ignore comments */
-
+{NUMBER}                       { yylval.value = strtod(yytext, NULL); return VALUE; }
+{VAR_NAME}                     { yylval.name = strdup(yytext); return NAME; }
 
 [\n\t ]*                       /* whitespace */
 .                              { fprintf(stderr, "Unknown token: '%s'\n", yytext); exit(EXIT_FAILURE); }
