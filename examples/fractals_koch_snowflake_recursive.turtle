@@ -1,0 +1,73 @@
+# Author : Tristan de SAINT GILLES
+
+# Inspired from https://understanding-recursion.readthedocs.io/en/latest/13%20Koch%20Curves.html,
+# a python turtle program for Koch snowflake
+
+## Variables 
+
+# Customizable variables
+set SIZE 800            # The size of the main segment. 
+                        # !! Setting higher than 800 may step out of screen
+set ORDER 5         # How many times Koch iteration will be applied on a segment
+                        # !! Setting higher than 6 may take too much time and/or memory
+set DEV 0               # Variable to print debug messages  
+
+# Do not touch these variables
+set TRUEORDER - ORDER + 1   # Used to stop the recursion
+set ELSE 1
+set RECURSE 0               # Count variable for debug, 
+                            # track how many times KOCH procedure was called
+
+## Procedures
+
+# recursive KOCH function for a segment 
+proc KOCH {
+    repeat DEV {
+        set RECURSE RECURSE + 1
+        print RECURSE
+    }
+    repeat TRUEORDER {
+        fw SIZE
+        set ELSE 0
+    }
+    repeat ELSE {
+        call REPEATKOCH
+        left 60
+        call REPEATKOCH
+        right 120
+        call REPEATKOCH
+        left 60
+        call REPEATKOCH
+    }
+}
+
+# Function to make the recursive call of KOCH with global variables
+proc REPEATKOCH {
+    set SIZE SIZE/3
+    set TRUEORDER TRUEORDER + 1
+    call KOCH
+    set SIZE SIZE*3
+    set TRUEORDER TRUEORDER - 1
+    set ELSE 1
+}
+
+# Draw the snowflake (or the triangle if TRUEORDER=0)
+proc SNOWFLAKE {
+    call INIT
+    repeat 3 {
+        call KOCH
+        right 120
+    }
+}
+
+# Initialize position, color and angle of the snowflake
+proc INIT {
+    color black
+    up
+    position -SIZE/2, -250
+    right 90
+    down
+}
+
+## Main
+call SNOWFLAKE
