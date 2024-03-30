@@ -1,7 +1,9 @@
 # Author : Tristan de SAINT GILLES
 
 # Inspired from https://understanding-recursion.readthedocs.io/en/latest/13%20Koch%20Curves.html,
-# a python turtle program for Koch snowflake
+# a python turtle program for Koch snowflake.
+
+# For more information on Koch snowflake, see https://en.wikipedia.org/wiki/Koch_snowflake.
 
 ## Variables 
 
@@ -16,7 +18,7 @@ set DEV 0               # Variable to print debug messages
 set TRUEORDER - ORDER + 1   # Used to stop the recursion
 set ELSE 1
 set RECURSE 0               # Count variable for debug, 
-                            # track how many times KOCH procedure was called
+                            # track how many times "KOCH" procedure was called
 
 ## Procedures
 
@@ -69,6 +71,7 @@ proc INIT {
 }
 
 ## Main
+
 call SNOWFLAKE
 repeat DEV {
     print RECURSE
