@@ -8,7 +8,7 @@
 # Customizable variables
 set SIZE 800            # The size of the main segment. 
                         # !! Setting higher than 800 may step out of screen
-set ORDER 5         # How many times Koch iteration will be applied on a segment
+set ORDER 5             # How many times Koch iteration will be applied on a segment
                         # !! Setting higher than 6 may take too much time and/or memory
 set DEV 0               # Variable to print debug messages  
 
