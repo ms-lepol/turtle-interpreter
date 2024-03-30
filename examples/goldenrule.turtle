@@ -1,0 +1,90 @@
+#Parameters
+set WIDTH 1
+set GOLDNUMBERWIDTHINIT 500
+set ITER 10
+
+#Important Variables
+set GOLDNUMBERWIDTH GOLDNUMBERWIDTHINIT
+set GOLDNUMBER 1.618
+set GOLDNUMBERLENGTH GOLDNUMBER*GOLDNUMBERWIDTH
+set ANGLE 0
+
+
+#Making a QUARTER-CIRCLE
+proc QUARTER {
+    repeat 360 {
+    fw GOLDSQUARE
+    up
+    fw WIDTH
+    down
+    bw GOLDSQUARE + WIDTH
+    left 0.25
+    }
+}
+
+#Calculating the fibonacci sequence (depreaced)
+proc FIBONACCI {
+    set FIBONACCIA 0
+    set FIBONACCIB 1
+    repeat FIBONACCINB {
+        set FIBONACCIC FIBONACCIA + FIBONACCIB
+        set FIBONACCIA FIBONACCIB
+        set FIBONACCIB FIBONACCIC
+    }
+}
+
+#Making a GOLDNUMBER Ratio Rectangle
+proc GOLDNUMBERRECT {
+    set GOLDNUMBERWIDTH GOLDNUMBERWIDTHINIT
+    up
+    position -GOLDNUMBERLENGTH/2 , -GOLDNUMBERWIDTH/2
+    down
+    heading 0
+    down
+    color random(0.0,1.0), random(0.0,1.0), random(0.0,1.0)
+    up
+    repeat 2 {
+            right 90
+            fw GOLDNUMBERLENGTH
+            right 90
+            fw GOLDNUMBERWIDTH
+    }
+    down
+    heading 0
+    up
+    position -GOLDNUMBERLENGTH/2 , GOLDNUMBERWIDTH/2
+     repeat ITER {
+        
+        set GOLDSQUARE GOLDNUMBERWIDTH
+        set COUNTER 0
+        up
+        repeat 5 {
+            color random(0.0,1.0), random(0.0,1.0), random(0.0,1.0)
+            set COUNTER COUNTER + 1
+            repeat COUNTER - 3 {
+                down
+                print COUNTER
+                right 90
+                set COUNTER -1
+                call QUARTER
+                up
+                
+            }
+            fw GOLDSQUARE
+            right 90
+           
+        }
+        fw GOLDSQUARE
+        set NEWW GOLDNUMBERLENGTH-GOLDNUMBERWIDTH
+        set GOLDNUMBERLENGTH GOLDNUMBERWIDTH
+        set GOLDNUMBERWIDTH NEWW
+        
+    }
+}
+
+set FIBONACCINB 10
+color red
+call GOLDNUMBERRECT
+
+print -2^2^2
+print 3-2
