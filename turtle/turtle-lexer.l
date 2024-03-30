@@ -49,7 +49,8 @@ VAR_NAME [A-Z][A-Z0-9]*
 
 
 %%
-
+{NUMBER}                       { yylval.value = strtod(yytext, NULL); return VALUE; }
+{VAR_NAME}                     { yylval.name = strdup(yytext); return NAME; }
 
 
 {KW_CMD_COLOR}                 { return KW_CMD_COLOR; }
@@ -90,8 +91,7 @@ VAR_NAME [A-Z][A-Z0-9]*
 "}"                            { return '}'; }
 
 {COMMENT}                      /* ignore comments */
-{NUMBER}                       { yylval.value = strtod(yytext, NULL); return VALUE; }
-{VAR_NAME}                     { yylval.name = strdup(yytext); return NAME; }
+
 
 [\n\t ]*                       /* whitespace */
 .                              { fprintf(stderr, "Unknown token: '%s'\n", yytext); exit(EXIT_FAILURE); }

@@ -32,6 +32,7 @@ struct ast_node *make_expr_value(double value) {
   return node;  
 }
 
+// An expression can be a variable with a name in our grammar so we need to create a node for it
 // This is a constructor for a variable expression
 struct ast_node *make_expr_name(char* name) {
   if (DEV) printf("make_expr_variable : %s\n", name);
@@ -42,6 +43,9 @@ struct ast_node *make_expr_name(char* name) {
   return node;
 }
 
+
+//A binary operation is an operation that takes two operands and returns one value
+//This is a constructor for a binary operation expression
 struct ast_node *make_expr_binop(char op,struct ast_node* left, struct ast_node* right) {
   if (DEV) printf("make_expr_binop : %c\n", op);
   struct ast_node *node = calloc(1, sizeof(struct ast_node));
@@ -53,6 +57,8 @@ struct ast_node *make_expr_binop(char op,struct ast_node* left, struct ast_node*
   return node;
 }
 
+//A color expression is an expression that takes a color as an argument and returns a value
+//This is a constructor for a color expression node with three values as children (r, g, b)
 struct ast_node *make_expr_color_rbg(double r, double g, double b) {
   if (DEV) printf("make_expr_color : %f, %f, %f\n", r, g, b);
   struct ast_node *node = calloc(1, sizeof(struct ast_node));
@@ -65,6 +71,9 @@ struct ast_node *make_expr_color_rbg(double r, double g, double b) {
   return node;
 }
 
+//A color expression is an expression that takes a color as an argument and returns a value
+//This is a constructor for a color expression node with a string as a child
+//Here we use the name field to store the color as a string and we use the children field to store the color as rbg values to be able to print the keyword color
 struct ast_node *make_expr_color(char* color) {
   if (DEV) printf("make_expr_color : %s\n", color);
   struct ast_node *node = calloc(1, sizeof(struct ast_node));
@@ -78,7 +87,8 @@ struct ast_node *make_expr_color(char* color) {
   return node;
 }
 
-
+//A unary operation is an operation that takes one operand and returns one value, there is only one unary operation in our grammar : the negation
+//This is a constructor for a unary operation expression (negation)
 struct ast_node *make_expr_neg(struct ast_node* expr) {
   struct ast_node *node = calloc(1, sizeof(struct ast_node));
   node->kind = KIND_EXPR_UNOP;
@@ -88,18 +98,13 @@ struct ast_node *make_expr_neg(struct ast_node* expr) {
   return node;
 }
 
-struct ast_node *make_expr_comma(struct ast_node* left, struct ast_node* right) {
-  if (DEV) printf("make_expr_comma\n");
-  struct ast_node *node = calloc(1, sizeof(struct ast_node));
-  node->kind = KIND_EXPR_BINOP;
-  node->u.op = ',';
-  node->children_count = 2;
-  node->children[0] = left;
-  node->children[1] = right;
-  return node;
-}
-
 /*Function expr constructor*/
+
+// In our grammar, we have 4 functions that take one argument and return one value : sin, cos, tan and sqrt
+// We also have a function that takes two arguments and returns one value : random
+// Each function has its own constructor and is represented by an enum in the ast_node structure
+// Each function is an expression node
+
 
 // This is a constructor cos function node
 struct ast_node *make_expr_func_cos (struct ast_node* expr) {
@@ -163,6 +168,9 @@ struct ast_node *make_expr_func_random (struct ast_node* expr,struct ast_node* e
   return node;
 }
 
+
+//The last expression node is the block expression node, it is used to group expressions together
+//This is useful for the operation priority and is needed to stock the parentheses for the print command
 // This is a constructor for a block expression node
 struct ast_node *make_expr_block(struct ast_node* expr) {
   if (DEV) printf("make_expr_block\n");
@@ -177,6 +185,12 @@ struct ast_node *make_expr_block(struct ast_node* expr) {
 /*
  * movements & rotations cmd constructors
  */
+
+//Primary commands are the commands that are used to move the turtle or change its orientation
+//There are 8 primary commands in our grammar : forward, backward, left, right, up, down, home, heading
+//Each primary command has its own constructor and is represented by an enum in the ast_node structure
+//Each primary command is a command node
+
 
 // This is a constructor for a forward command node with an expression as a child
 struct ast_node *make_cmd_forward(struct ast_node* expr) {
@@ -222,6 +236,7 @@ struct ast_node *make_cmd_right(struct ast_node* expr) {
   return node;
 }
 
+// This is a constructor for a up command node
 struct ast_node *make_cmd_up() {
   if (DEV) printf("make_cmd_up\n");
   struct ast_node *node = calloc(1, sizeof(struct ast_node));
@@ -231,6 +246,7 @@ struct ast_node *make_cmd_up() {
   return node;
 }
 
+// This is a constructor for a down command node
 struct ast_node *make_cmd_down() {
   if (DEV) printf("make_cmd_down\n");
   struct ast_node *node = calloc(1, sizeof(struct ast_node));
@@ -239,51 +255,6 @@ struct ast_node *make_cmd_down() {
   node->children_count = 0;
   return node;
 }
-
-/*
- * Various cmd constructors
- */
-
-// This is a constructor a color command node with an expression as a child
-struct ast_node *make_cmd_color(struct ast_node* expr) {
-  if (DEV) printf("make_cmd_color\n");
-  struct ast_node *node = calloc(1,sizeof(struct ast_node));
-  
-  node->kind = KIND_CMD_SIMPLE;
-  node->u.cmd = CMD_COLOR;
-  node->children_count = 1;
-  node->children[0] = expr;
-  return node;
-}
-
-struct ast_node *make_cmd_color_rgb(struct ast_node* r,struct ast_node* g, struct ast_node* b){
-  if (DEV) printf("make_cmd_color_rbg\n");
-  struct ast_node *node = calloc(1,sizeof(struct ast_node));
-
-  node->kind= KIND_CMD_SIMPLE;
-  node->u.cmd = CMD_COLOR;
-  node->children_count = 3;/*Function expr constructor*/
-
-  node->children[0] = r;
-  node->children[1] = g;
-  node->children[2] = b;
-  return node;
-}
-
-
-// This is a constructor a print command node with an message to print on stderr
-struct ast_node *make_cmd_print(struct ast_node *msg) {
-  if (DEV) printf("make_cmd_print\n");
-  struct ast_node *node = calloc(1,sizeof(struct ast_node));
-  
-  node->kind = KIND_CMD_SIMPLE;
-  node->u.cmd = CMD_PRINT;
-  
-  node->children_count = 1;
-  node->children[0] = msg;
-  return node;
-}
-
 
 // This is a constructor a home command node
 struct ast_node *make_cmd_home() {
@@ -308,6 +279,55 @@ struct ast_node *make_cmd_heading(struct ast_node* expr) {
   return node;
 }
 
+// There is more simples commands that are used to change the color of the turtle or print messages on stderr
+
+/*
+ * Various cmd constructors
+ */
+
+// This is a constructor a color command node with an expression as a child
+struct ast_node *make_cmd_color(struct ast_node* expr) {
+  if (DEV) printf("make_cmd_color\n");
+  struct ast_node *node = calloc(1,sizeof(struct ast_node));
+  
+  node->kind = KIND_CMD_SIMPLE;
+  node->u.cmd = CMD_COLOR;
+  node->children_count = 1;
+  node->children[0] = expr;
+  return node;
+}
+
+// This is a constructor a color command node with three expressions as children (r, g, b)
+struct ast_node *make_cmd_color_rgb(struct ast_node* r,struct ast_node* g, struct ast_node* b){
+  if (DEV) printf("make_cmd_color_rbg\n");
+  struct ast_node *node = calloc(1,sizeof(struct ast_node));
+
+  node->kind= KIND_CMD_SIMPLE;
+  node->u.cmd = CMD_COLOR;
+  node->children_count = 3;
+  node->children[0] = r;
+  node->children[1] = g;
+  node->children[2] = b;
+  return node;
+}
+
+
+// This is a constructor a print command node with an message to print on stderr
+struct ast_node *make_cmd_print(struct ast_node *msg) {
+  if (DEV) printf("make_cmd_print\n");
+  struct ast_node *node = calloc(1,sizeof(struct ast_node));
+  
+  node->kind = KIND_CMD_SIMPLE;
+  node->u.cmd = CMD_PRINT;
+  
+  node->children_count = 1;
+  node->children[0] = msg;
+  return node;
+}
+
+
+
+
 // This is a constructor a position command node
 struct ast_node *make_cmd_position(struct ast_node* expr_x, struct ast_node* expr_y) {
   if (DEV) printf("make_cmd_position\n");
@@ -322,7 +342,11 @@ struct ast_node *make_cmd_position(struct ast_node* expr_x, struct ast_node* exp
 }
 
 /*Complex CMD Constructor*/
+// There are multiple complex commands in our grammar : repeat, block, set, call, proc
+// Each complex command has its own constructor and is represented by an enum in the ast_node structure
+// Each complex command is a command node
 
+// This is a constructor a repeat command node with an expression as a child,
 struct ast_node *make_cmd_repeat(struct ast_node* expr, struct ast_node* block) {
   if (DEV) printf("make_cmd_repeat\n");
   struct ast_node *node = calloc(1,sizeof(struct ast_node));
@@ -334,6 +358,8 @@ struct ast_node *make_cmd_repeat(struct ast_node* expr, struct ast_node* block) 
   return node;
 }
 
+// This is a constructor a block command node with a block as a child
+// A block is a sequence of commands
 struct ast_node *make_cmd_block(struct ast_node* block) {
   if (DEV) printf("make_cmd_block\n");
   struct ast_node *node = calloc(1,sizeof(struct ast_node));
@@ -344,6 +370,8 @@ struct ast_node *make_cmd_block(struct ast_node* block) {
   return node;
 }
 
+// This is a constructor a set command node with a name and an expression as children
+// A set command is used to set a variable to a value
 struct ast_node *make_cmd_set(char* name, struct ast_node* expr) {
   if (DEV) printf("make_cmd_set\n");
   struct ast_node *node = calloc(1,sizeof(struct ast_node));
@@ -355,6 +383,7 @@ struct ast_node *make_cmd_set(char* name, struct ast_node* expr) {
   return node;
 }
 
+// This is a constructor a call command node with a name as a child
 struct ast_node *make_cmd_call(char* name) {
   if (DEV) printf("make_cmd_call\n");
   struct ast_node *node = calloc(1,sizeof(struct ast_node));
@@ -365,6 +394,7 @@ struct ast_node *make_cmd_call(char* name) {
   return node;
 }
 
+// This is a constructor a proc command node with a name and a block as children
 struct ast_node *make_cmd_proc(char* name, struct ast_node* block) {
   if (DEV) printf("make_cmd_proc\n");
   struct ast_node *node = calloc(1,sizeof(struct ast_node));
@@ -375,10 +405,11 @@ struct ast_node *make_cmd_proc(char* name, struct ast_node* block) {
   node->children[1] = block;
   return node;
 }
+
 /*
  * ast destructor
  */
-
+// This function destroys the ast at the end of the program
 void ast_destroy(struct ast *self) {
   if (self->unit) {
     ast_node_destroy(self->unit);
@@ -386,6 +417,7 @@ void ast_destroy(struct ast *self) {
   }
 }
 
+// This function destroys a node of the ast and all its children
 void ast_node_destroy(struct ast_node *self) {
   
   for (int i = 0; i < self->children_count; i++) {
@@ -407,7 +439,7 @@ void ast_node_destroy(struct ast_node *self) {
 // This function initializes the context at the beginning of the program
 // The context is a structure that contains the current position of the turtle and its orientation
 // The context is used to evaluate the expressions and commands
-
+// The context also contains the variables, procedures and constants that are used in the program
 void context_create(struct context *self) {
   self->x = 0;
   self->y = 0;
@@ -416,11 +448,13 @@ void context_create(struct context *self) {
   self->exit_code = 0;
   self->in_proc = 0;
 
+  // We create the hashmaps for the variables, procedures and constants, we use the hashmap_procvar structure to store the data
+  // The hashmap_procvar structure is a hashmap that can store variables (as double) and procedures (as ast_node) in the same hashmap using an union
   self->variables = hashmap_procvar_create(10);
   self->procedures = hashmap_procvar_create(10);
   self->consts = hashmap_procvar_create(10);
 
-    //Constants PI, SQRT2, SQRT3
+    //We add the constants PI, SQRT2 and SQRT3 to the context
   hashmap_procvar_set_var(self->consts, "PI", PI);
   hashmap_procvar_set_var(self->consts, "SQRT2",SQRT2);
   hashmap_procvar_set_var(self->consts, "SQRT3", SQRT3);
